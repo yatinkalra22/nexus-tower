@@ -127,4 +127,22 @@ export const tools = {
       };
     },
   }),
+
+  computeGwp: tool({
+    description: "Calculate Global Warming Potential (CO2e) for a shipment based on GLEC factors.",
+    parameters: z.object({
+      mode: z.enum(["sea_container", "road_heavy_truck", "air_freight", "rail_freight"]),
+      distanceKm: z.number(),
+      weightKg: z.number(),
+    }),
+    execute: async (args) => {
+      const { computeGwp } = await import("@/lib/analytics/gwp");
+      const gwp = computeGwp(args);
+      return {
+        gwpKg: gwp.toFixed(2),
+        unit: "kg CO2e",
+        methodology: "GLEC Framework v3.0",
+      };
+    },
+  }),
 };
