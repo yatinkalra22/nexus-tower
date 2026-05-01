@@ -3,6 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { TokenMeter } from "@/components/dashboard/token-meter";
 
 export default function DashboardLayout({
   children,
@@ -24,11 +25,8 @@ export default function DashboardLayout({
               </Badge>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden items-center gap-1 text-xs text-muted-foreground md:flex">
-              <span>Token Budget:</span>
-              <span className="font-medium text-foreground">$100.00 left</span>
-            </div>
+          <div className="flex items-center gap-6">
+            <TokenMeter />
             <UserButton afterSignOutUrl="/sign-in" />
           </div>
         </header>
