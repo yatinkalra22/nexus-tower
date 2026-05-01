@@ -142,3 +142,12 @@ export const agentTokenUsage = sqliteTable("agent_token_usage", {
 }, (table) => ({
   userDateIdx: index("agent_token_usage_user_date_idx").on(table.userId, table.date),
 }));
+
+export const mcpTokens = sqliteTable("mcp_tokens", {
+  token: text("token").primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(), // e.g. "Claude Desktop"
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+}, (table) => ({
+  userIdIdx: index("mcp_tokens_user_id_idx").on(table.userId),
+}));
