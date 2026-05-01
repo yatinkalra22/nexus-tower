@@ -8,9 +8,16 @@ import { Trash2, Edit, MapPin, Ship, Calendar } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 
+import { LiveMap } from "@/components/map/live-map";
+
 export default async function ShipmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const shipment = await getShipment(id);
+  const shipment = await db.query.shipments.findFirst({
+    where: eq(shipments.id, id),
+    with: {
+      waypoints: true,
+    },
+  });
 
   if (!shipment) {
     notFound();
@@ -24,6 +31,7 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="flex flex-col gap-6">
+      {/* ... header ... */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
@@ -51,6 +59,7 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* ... existing cards ... */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Route Information</CardTitle>
@@ -106,10 +115,11 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
         </Card>
       </div>
 
-      <div className="rounded-xl border bg-card p-6 min-h-[300px] flex items-center justify-center text-muted-foreground">
-        {/* Placeholder for Map and Live AIS (F8) */}
-        Live tracking will be available once AIS ingestor is active.
-      </div>
+      <LiveMap 
+        mmsis={shipment.vesselMmsi ? [shipment.vesselMmsi] : []} 
+        waypoints={shipment.waypoints} 
+        height="400px" 
+      />
     </div>
   );
 }
