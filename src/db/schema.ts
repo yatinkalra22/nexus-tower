@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, relations } from "drizzle-orm";
 import { sqliteTable, text, integer, real, index, primaryKey } from "drizzle-orm/sqlite-core";
 
 export const shipments = sqliteTable("shipments", {
@@ -14,6 +14,27 @@ export const shipments = sqliteTable("shipments", {
   createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
   updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
+
+export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
+  originPort: one(ports, {
+    fields: [shipments.originPortId],
+    references: [ports.id],
+  }),
+  destinationPort: one(ports, {
+    fields: [shipments.destinationPortId],
+    references: [ports.id],
+  }),
+  carrier: one(carriers, {
+    fields: [shipments.carrierId],
+    references: [carriers.id],
+  }),
+  vessel: one(vessels, {
+    fields: [shipments.vesselMmsi],
+    references: [vessels.mmsi],
+  }),
+  exceptions: many(exceptions),
+  waypoints: many(routeWaypoints),
+}));
 
 export const carriers = sqliteTable("carriers", {
   id: text("id").primaryKey(),
