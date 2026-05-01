@@ -1,0 +1,97 @@
+import { tool } from "ai";
+import { z } from "zod";
+import { db } from "@/db";
+import { shipments, vesselPositions, routeWaypoints, exceptions } from "@/db/schema";
+import { eq, desc, and, ne } from "drizzle-orm";
+import { getGdeltEvents } from "@/server/enrich/gdelt";
+import { getWeatherForPoint } from "@/server/enrich/weather";
+
+export const tools = {
+  queryShipments: tool({
+    description: "List active shipments with their current status and IDs.",
+    parameters: z.object({
+      status: z.enum(["pending", "in_transit", "arrived", "delayed", "cancelled"]).optional(),
+    }),
+    execute: async ({ status }) => {
+      const results = await db.query.shipments.findMany({
+        where: status ? eq(shipments.status, status) : ne(shipments.status, "arrived"),
+        limit: 10,
+      });
+      return results;
+    },
+  }),
+
+  getShipment: tool({
+    description: "Get detailed information about a specific shipment by its ID.",
+    parameters: z.object({
+      shipmentId: z.string(),
+    }),
+    execute: async ({ shipmentId }) => {
+      const shipment = await db.query.shipments.findFirst({
+        where: eq(shipments.id, shipmentId),
+        with: {
+          waypoints: true,
+          exceptions: true,
+        },
+      });
+      return shipment || { error: "Shipment not found" };
+    },
+  }),
+
+  liveVesselPosition: tool({
+    description: "Get the latest AIS position for a vessel by its MMSI.",
+    parameters: z.object({
+      mmsi: z.string(),
+    }),
+    execute: async ({ mmsi }) => {
+      const pos = await db.query.vesselPositions.findFirst({
+        where: eq(vesselPositions.mmsi, mmsi),
+        orderBy: desc(vesselPositions.timestamp),
+      });
+      return pos || { error: "No position found for this vessel" };
+    },
+  }),
+
+  getWeatherOnRoute: tool({
+    description: "Get weather conditions for a specific point on a shipment's route.",
+    parameters: z.object({
+      lat: z.number(),
+      lon: z.number(),
+    }),
+    execute: async ({ lat, lon }) => {
+      return await getWeatherForPoint(lat, lon);
+    },
+  }),
+
+  scanGdeltDisruptions: tool({
+    description: "Scan for real-time geopolitical disruptions or news near coordinates.",
+    parameters: z.object({
+      lat: z.number(),
+      lon: z.number(),
+    }),
+    execute: async ({ lat, lon }) => {
+      return await getGdeltEvents(lat, lon);
+    },
+  }),
+
+  proposeReroute: tool({
+    description: "Propose a reroute for a shipment to avoid a disruption. Returns a pending approval plan.",
+    parameters: z.object({
+      shipmentId: z.string(),
+      newDestinationPortId: z.string(),
+      reason: z.string(),
+    }),
+    execute: async ({ shipmentId, newDestinationPortId, reason }) => {
+      // In F12 we will implement the actual HITL flow.
+      // For now, we return the proposal as a pending state.
+      return {
+        status: "pending_approval",
+        action: "reroute",
+        shipmentId,
+        newDestinationPortId,
+        reason,
+        message: `Plan generated to reroute ${shipmentId} to ${newDestinationPortId} due to: ${reason}. Awaiting operator approval.`,
+      };
+    },
+  }),
+};
