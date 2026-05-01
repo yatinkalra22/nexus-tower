@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { shipments } from "@/db/schema";
 import { eq, ne } from "drizzle-orm";
 import { enrichShipment } from "@/server/enrich/recompute-exceptions";
+import { detectAnomalies } from "@/server/analytics/anomaly";
 import { env } from "@/env";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +20,19 @@ export async function GET(req: NextRequest) {
     });
 
     const results = [];
+    const trackedMmsis = new Set<string>();
+
     for (const shipment of activeShipments) {
       await enrichShipment(shipment.id);
       results.push(shipment.id);
+      if (shipment.vesselMmsi) {
+        trackedMmsis.add(shipment.vesselMmsi);
+      }
+    }
+
+    // Run anomaly detection for all tracked vessels
+    for (const mmsi of trackedMmsis) {
+      await detectAnomalies(mmsi);
     }
 
     return NextResponse.json({ ok: true, processed: results });
