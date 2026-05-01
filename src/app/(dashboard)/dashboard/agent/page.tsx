@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Terminal, User, Bot, Loader2 } from "lucide-react";
 import { ToolCallCard } from "@/components/agent/tool-call-card";
+import { ApprovalCard } from "@/components/agent/approval-card";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -30,6 +31,7 @@ export default function AgentPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)] gap-4">
+      {/* ... header ... */}
       <div className="flex items-center gap-2">
         <Terminal className="size-6 text-primary" />
         <h1 className="text-3xl font-bold">Disruptor Fixer</h1>
@@ -52,19 +54,36 @@ export default function AgentPage() {
                 </div>
               )}
               {messages.map((m) => (
-                <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
-                  <div className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
-                    m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted border"
-                  }`}>
-                    {m.role === "user" ? <User className="size-4" /> : <Bot className="size-4" />}
-                  </div>
-                  <div className={`flex flex-col gap-2 max-w-[80%] ${m.role === "user" ? "items-end" : ""}`}>
-                    <div className={`p-3 rounded-lg text-sm ${
-                      m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted/50"
+                <div key={m.id} className="flex flex-col gap-4">
+                  <div className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
+                    <div className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
+                      m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted border"
                     }`}>
-                      {m.content}
+                      {m.role === "user" ? <User className="size-4" /> : <Bot className="size-4" />}
+                    </div>
+                    <div className={`flex flex-col gap-2 max-w-[80%] ${m.role === "user" ? "items-end" : ""}`}>
+                      <div className={`p-3 rounded-lg text-sm ${
+                        m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted/50"
+                      }`}>
+                        {m.content}
+                      </div>
                     </div>
                   </div>
+                  
+                  {/* Tool Call Approval Logic */}
+                  {m.toolInvocations?.map((ti) => {
+                    if ('result' in ti && ti.result?.status === "pending_approval") {
+                      return (
+                        <div key={ti.toolCallId} className="ml-11 max-w-[500px]">
+                          <ApprovalCard 
+                            action={ti.result.action} 
+                            payload={ti.result} 
+                          />
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
               ))}
               {isLoading && messages[messages.length - 1]?.role === "user" && (

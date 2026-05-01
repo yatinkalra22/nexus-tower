@@ -82,15 +82,48 @@ export const tools = {
       reason: z.string(),
     }),
     execute: async ({ shipmentId, newDestinationPortId, reason }) => {
-      // In F12 we will implement the actual HITL flow.
-      // For now, we return the proposal as a pending state.
       return {
         status: "pending_approval",
         action: "reroute",
         shipmentId,
         newDestinationPortId,
         reason,
-        message: `Plan generated to reroute ${shipmentId} to ${newDestinationPortId} due to: ${reason}. Awaiting operator approval.`,
+        message: `Plan generated to reroute ${shipmentId} to ${newDestinationPortId} due to: ${reason}.`,
+      };
+    },
+  }),
+
+  rebookCarrier: tool({
+    description: "Rebook a shipment with a different carrier. Requires approval.",
+    parameters: z.object({
+      shipmentId: z.string(),
+      newCarrierId: z.string(),
+      reason: z.string(),
+    }),
+    execute: async ({ shipmentId, newCarrierId, reason }) => {
+      return {
+        status: "pending_approval",
+        action: "rebook",
+        shipmentId,
+        newCarrierId,
+        reason,
+        message: `Proposal: Change carrier for ${shipmentId} to ${newCarrierId} (${reason}).`,
+      };
+    },
+  }),
+
+  notifyClient: tool({
+    description: "Send a notification to the client regarding a delay or change. Requires approval.",
+    parameters: z.object({
+      shipmentId: z.string(),
+      message: z.string(),
+    }),
+    execute: async ({ shipmentId, message }) => {
+      return {
+        status: "pending_approval",
+        action: "notify",
+        shipmentId,
+        message,
       };
     },
   }),
