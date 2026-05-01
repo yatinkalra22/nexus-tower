@@ -1,0 +1,4 @@
+sku,name,onHand,leadTimeDays,demandMean,demandSigma,unit
+SKU-100,Industrial Pumps,500,14,10,2,pcs
+SKU-200,Steel Fasteners,12000,7,500,50,kg
+SKU-300,Control Valves,50,30,5,1,pcs

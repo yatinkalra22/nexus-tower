@@ -145,4 +145,55 @@ export const tools = {
       };
     },
   }),
+
+  getTariffRate: tool({
+    description: "Get the current tariff or duty rate for a specific HS code between an origin and destination.",
+    parameters: z.object({
+      hsCode: z.string(),
+      origin: z.string(),
+      destination: z.string(),
+    }),
+    execute: async ({ hsCode, origin, destination }) => {
+      const { getTariffRate } = await import("@/server/tariffs/wits");
+      const rate = await getTariffRate(hsCode, origin, destination);
+      return {
+        hsCode,
+        origin,
+        destination,
+        ratePercent: rate,
+        source: "WITS API / Local Benchmark",
+      };
+    },
+  }),
+
+  checkInventory: tool({
+    description: "Check the inventory status for a specific SKU, including on-hand quantity, safety stock, and reorder points.",
+    parameters: z.object({
+      sku: z.string(),
+    }),
+    execute: async ({ sku }) => {
+      const { db } = await import("@/db");
+      const { inventoryItems } = await import("@/db/schema");
+      const { eq } = await import("drizzle-orm");
+
+      const item = await db.query.inventoryItems.findFirst({
+        where: eq(inventoryItems.sku, sku),
+      });
+
+      if (!item) return { error: "SKU not found in inventory." };
+
+      const isStockoutRisk = item.reorderPoint !== null && item.onHand <= item.reorderPoint;
+
+      return {
+        sku: item.sku,
+        name: item.name,
+        onHand: item.onHand,
+        safetyStock: item.safetyStock,
+        reorderPoint: item.reorderPoint,
+        unit: item.unit,
+        isStockoutRisk,
+        statusMessage: isStockoutRisk ? "CRITICAL: Below or at reorder point." : "Healthy",
+      };
+    },
+  }),
 };
