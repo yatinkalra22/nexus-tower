@@ -2,6 +2,23 @@ import { tools } from '@/lib/agent/tools';
 import { validateMcpToken } from '@/server/mcp/tokens';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { db } from '@/db';
+import { eventsAudit } from '@/db/schema';
+
+const MCP_RATE_LIMIT = 60; // max calls per minute per user
+const rateBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const bucket = rateBuckets.get(userId);
+  if (!bucket || now > bucket.resetAt) {
+    rateBuckets.set(userId, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (bucket.count >= MCP_RATE_LIMIT) return false;
+  bucket.count++;
+  return true;
+}
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -13,6 +30,10 @@ export async function POST(req: NextRequest) {
   const userId = await validateMcpToken(token);
   if (!userId) {
     return new Response('Invalid Token', { status: 401 });
+  }
+
+  if (!checkRateLimit(userId)) {
+    return new Response('Rate limit exceeded', { status: 429 });
   }
 
   try {
@@ -44,6 +65,15 @@ export async function POST(req: NextRequest) {
 
       const toolObj = toolEntry as unknown as { execute: (args: unknown) => Promise<unknown> };
       const result = await toolObj.execute(args);
+
+      await db.insert(eventsAudit).values({
+        actorUserId: userId,
+        action: 'mcp_call_tool',
+        tool: name,
+        payload: JSON.stringify(args),
+        outcome: JSON.stringify(result).slice(0, 1000),
+      });
+
       return Response.json({ result });
     }
 

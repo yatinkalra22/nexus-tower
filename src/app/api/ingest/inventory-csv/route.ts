@@ -25,13 +25,19 @@ interface InventoryRow {
   unit?: string;
 }
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    
+
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: "File too large. Maximum size is 2MB." }, { status: 413 });
     }
 
     const text = await file.text();
