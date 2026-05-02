@@ -130,6 +130,7 @@ Use the values in [`.env.local.example`](.env.local.example) as the template for
 ## Documentation
 
 - [Architecture](docs/PLAN.md)
+- [Key Setup Guide](docs/KEYS-SETUP.md)
 
 ## License
 
