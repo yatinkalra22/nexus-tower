@@ -19,6 +19,9 @@ interface Shipment {
   originPortId: string | null;
   destinationPortId: string | null;
   eta: Date | null;
+  originPort?: { name: string } | null;
+  destinationPort?: { name: string } | null;
+  carrier?: { name: string } | null;
 }
 
 const STATUS_COLORS = new Map([
@@ -165,8 +168,14 @@ export function ShipmentsTable({ shipments }: { shipments: Shipment[] }) {
                       <span className="text-sm capitalize">{s.status?.replace("_", " ")}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono text-sm">{s.originPortId || "--"}</TableCell>
-                  <TableCell className="font-mono text-sm">{s.destinationPortId || "--"}</TableCell>
+                  <TableCell className="text-sm">
+                    {s.originPort?.name ?? s.originPortId ?? "--"}
+                    {s.originPort?.name && <span className="ml-1 text-xs text-muted-foreground font-mono">({s.originPortId})</span>}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {s.destinationPort?.name ?? s.destinationPortId ?? "--"}
+                    {s.destinationPort?.name && <span className="ml-1 text-xs text-muted-foreground font-mono">({s.destinationPortId})</span>}
+                  </TableCell>
                   <TableCell className="font-mono text-sm">{s.eta ? new Date(s.eta).toLocaleDateString() : "--"}</TableCell>
                 </TableRow>
               ))}

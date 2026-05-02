@@ -65,12 +65,14 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
           <CardContent className="flex flex-col gap-4 p-0">
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Origin</span>
-              <span className="font-mono font-medium">{shipment.originPortId || 'Not specified'}</span>
+              <span className="font-medium">{shipment.originPort?.name ?? shipment.originPortId ?? 'Not specified'}</span>
+              {shipment.originPort?.name && <span className="text-xs text-muted-foreground font-mono">{shipment.originPortId}</span>}
             </div>
             <Separator />
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Destination</span>
-              <span className="font-mono font-medium">{shipment.destinationPortId || 'Not specified'}</span>
+              <span className="font-medium">{shipment.destinationPort?.name ?? shipment.destinationPortId ?? 'Not specified'}</span>
+              {shipment.destinationPort?.name && <span className="text-xs text-muted-foreground font-mono">{shipment.destinationPortId}</span>}
             </div>
           </CardContent>
         </Card>
@@ -83,12 +85,14 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
           <CardContent className="flex flex-col gap-4 p-0">
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Carrier</span>
-              <span className="font-medium">{shipment.carrierId || 'Not specified'}</span>
+              <span className="font-medium">{shipment.carrier?.name ?? shipment.carrierId ?? 'Not specified'}</span>
+              {shipment.carrier?.name && <span className="text-xs text-muted-foreground font-mono">{shipment.carrierId}</span>}
             </div>
             <Separator />
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Vessel MMSI</span>
-              <span className="font-mono font-medium">{shipment.vesselMmsi || 'Not specified'}</span>
+              <span className="font-medium">{shipment.vessel?.name ?? shipment.vesselMmsi ?? 'Not specified'}</span>
+              {shipment.vessel?.name && <span className="text-xs text-muted-foreground font-mono">{shipment.vesselMmsi}</span>}
             </div>
           </CardContent>
         </Card>

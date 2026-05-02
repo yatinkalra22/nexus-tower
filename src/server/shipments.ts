@@ -46,11 +46,22 @@ export async function deleteShipments(ids: string[]) {
 export async function getShipments() {
   return db.query.shipments.findMany({
     orderBy: (shipments, { desc }) => [desc(shipments.createdAt)],
+    with: {
+      originPort: true,
+      destinationPort: true,
+      carrier: true,
+    },
   });
 }
 
 export async function getShipment(id: string) {
   return db.query.shipments.findFirst({
     where: eq(shipments.id, id),
+    with: {
+      originPort: true,
+      destinationPort: true,
+      carrier: true,
+      vessel: true,
+    },
   });
 }
