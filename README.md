@@ -60,12 +60,27 @@ nexus-tower/
 ## Quick Start
 
 ```bash
+# Install all workspace dependencies
 npm install
+
+# Create your local env file from the template
+cp .env.local.example .env.local
+
+# Push the schema to Turso before the first run
 npm run db:push
+
+# Start the web app
 npm run dev
 ```
 
 Open the app at `http://localhost:3000`.
+
+If you want live AIS updates while developing, run the ingestor in a second terminal:
+
+```bash
+# AIS ingestor
+npm run ingestor:dev
+```
 
 ## Configuration
 
@@ -115,13 +130,6 @@ Use the values in [`.env.local.example`](.env.local.example) as the template for
 ## Documentation
 
 - [Architecture](docs/PLAN.md)
-- [Demo Script](docs/DEMO-SCRIPT.md)
-- [Devpost Draft](docs/DEVPOST.md)
-
-## Demo Assets
-
-- [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md)
-- [docs/DEVPOST.md](docs/DEVPOST.md)
 
 ## License
 
