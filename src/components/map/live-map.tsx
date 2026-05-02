@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { Map as MaplibreMap, Marker } from "maplibre-gl";
 
 function escapeHtml(str: string | number): string {
   return String(str).replace(/[&<>"']/g, (c) =>
@@ -24,8 +25,8 @@ interface LiveMapProps {
 
 export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
-  const markersRef = useRef<Map<string, any>>(new Map());
+  const mapRef = useRef<(MaplibreMap & { __es?: EventSource }) | null>(null);
+  const markersRef = useRef<Map<string, Marker>>(new Map());
   const initRef = useRef(false);
   const fittedRef = useRef(false);
 
@@ -133,14 +134,14 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
           }
         };
 
-        (map as any).__es = es;
+        (map as MaplibreMap & { __es?: EventSource }).__es = es;
       }
     })();
 
     return () => {
       cancelled = true;
       if (mapRef.current) {
-        (mapRef.current as any).__es?.close();
+        mapRef.current.__es?.close();
         mapRef.current.remove();
         mapRef.current = null;
       }

@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 
 interface ToolCallCardProps {
   toolName: string;
-  args: Record<string, any>;
-  result?: any;
+  args: Record<string, unknown>;
+  result?: unknown;
   status: "pending" | "running" | "done" | "error";
 }
 
@@ -58,7 +58,7 @@ export function ToolCallCard({ toolName, args, result, status }: ToolCallCardPro
           </div>
 
           {/* Result */}
-          {result && (
+          {result != null && (
             <div className="flex flex-col gap-1">
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-mono">
                 result
