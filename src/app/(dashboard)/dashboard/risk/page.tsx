@@ -4,6 +4,9 @@ import { eq, desc, ne, and, count } from "drizzle-orm";
 import { AlertTriangle, Activity, Anchor, TrendingDown } from "lucide-react";
 import Link from "next/link";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Risk Monitor | NexusTower" };
 export const dynamic = "force-dynamic";
 
 const severityBorder: Record<string, string> = {

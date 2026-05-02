@@ -7,6 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ImportInventoryCSVButton } from "./import-button";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Inventory | NexusTower" };
 export const dynamic = "force-dynamic";
 
 export default async function InventoryPage() {

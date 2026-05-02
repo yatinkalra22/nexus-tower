@@ -6,6 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TariffSimulator } from "@/components/dashboard/tariff-simulator";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Tariffs | NexusTower" };
 export const dynamic = "force-dynamic";
 
 export default async function TariffsPage() {

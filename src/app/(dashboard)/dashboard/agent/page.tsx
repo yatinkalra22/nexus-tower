@@ -79,18 +79,18 @@ function AgentChat({ initialMessages }: { initialMessages?: UIMessage[] }) {
     }
   }, [status, messages, saveMessages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
     sendMessage({ text: input });
     setInput('');
-  };
+  }, [input, isLoading, sendMessage]);
 
-  const handleClear = async () => {
+  const handleClear = useCallback(async () => {
     setMessages([]);
     prevLengthRef.current = 0;
     await fetch('/api/chat-history', { method: 'DELETE' }).catch(() => {});
-  };
+  }, [setMessages]);
 
   return (
     <div className="flex flex-col h-[calc(100dvh-8rem)] gap-4 animate-fade-in">
@@ -105,6 +105,7 @@ function AgentChat({ initialMessages }: { initialMessages?: UIMessage[] }) {
         {messages.length > 0 && (
           <button
             onClick={handleClear}
+            aria-label="Clear chat history"
             className="flex items-center gap-1.5 rounded-lg border border-border/50 bg-white/[0.03] px-2.5 py-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:border-red-400/30 transition-colors"
           >
             <Trash2 className="size-3" />
@@ -231,6 +232,7 @@ function AgentChat({ initialMessages }: { initialMessages?: UIMessage[] }) {
               size="icon"
               variant="ghost"
               disabled={isLoading || !input.trim()}
+              aria-label="Send message"
               className="size-8 shrink-0 text-muted-foreground hover:text-primary hover:bg-white/[0.03] transition-colors duration-150"
             >
               <Send className="size-3.5" />

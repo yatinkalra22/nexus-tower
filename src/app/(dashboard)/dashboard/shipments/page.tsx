@@ -7,6 +7,9 @@ import { CSVImportModal } from '@/components/shipments/csv-import-modal';
 import { GenerateDemoButton } from '@/components/dashboard/generate-demo-button';
 import { ShipmentsTable } from '@/components/shipments/shipments-table';
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Shipments | NexusTower" };
 export const dynamic = "force-dynamic";
 
 export default async function ShipmentsPage() {

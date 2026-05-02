@@ -13,8 +13,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground transition-colors" />
             <Separator orientation="vertical" className="mr-2 h-4 bg-border/50" />
-            <div className="flex items-center gap-1.5">
-              <div className="size-1.5 rounded-full bg-emerald-400 animate-pulse-status" />
+            <div className="flex items-center gap-1.5" role="status" aria-label="System operational">
+              <div className="size-1.5 rounded-full bg-emerald-400 animate-pulse-status" aria-hidden="true" />
               <span className="hidden sm:inline text-[11px] font-medium tracking-wide uppercase text-muted-foreground">
                 Operational
               </span>

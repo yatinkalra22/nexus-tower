@@ -135,9 +135,9 @@ export function CSVImportModal() {
     [handleFile]
   );
 
-  const updateMapping = (header: string, value: FieldKey | "skip") => {
+  const updateMapping = useCallback((header: string, value: FieldKey | "skip") => {
     setMapping((prev) => ({ ...prev, [header]: value }));
-  };
+  }, []);
 
   const mappedFields = useMemo(() => Object.values(mapping).filter((v) => v !== "skip"), [mapping]);
   const visibleFields = useMemo(() => OUR_FIELDS.filter((f) => mappedFields.includes(f.key)), [mappedFields]);

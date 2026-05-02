@@ -3,6 +3,9 @@ import { shipments } from "@/db/schema";
 import { ne, isNotNull, and } from "drizzle-orm";
 import { LiveMap } from "@/components/map/live-map";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Fleet Map | NexusTower" };
 export const dynamic = "force-dynamic";
 
 export default async function GlobalMapPage() {

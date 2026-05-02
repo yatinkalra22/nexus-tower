@@ -9,7 +9,9 @@ import { Ship, AlertTriangle, CheckCircle, Leaf, ArrowRight } from "lucide-react
 import { computeGwp } from "@/lib/analytics/gwp";
 import { GetStartedBanner } from "@/components/dashboard/get-started";
 import Link from "next/link";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = { title: "Command Center | NexusTower" };
 export const dynamic = "force-dynamic";
 
 const statusDot = (s: string | null) => {
@@ -96,7 +98,7 @@ export default async function DashboardPage() {
           className="hidden md:flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
         >
           Ask Agent
-          <ArrowRight className="size-3" />
+          <ArrowRight className="size-3" aria-hidden="true" />
         </Link>
       </div>
 

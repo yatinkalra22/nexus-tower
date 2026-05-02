@@ -5,6 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { User, ShieldCheck } from "lucide-react";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Audit Log | NexusTower" };
 export const dynamic = "force-dynamic";
 
 export default async function AuditPage() {

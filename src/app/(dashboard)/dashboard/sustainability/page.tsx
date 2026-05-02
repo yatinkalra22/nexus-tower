@@ -16,6 +16,9 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { computeGwp, EMISSION_FACTORS } from '@/lib/analytics/gwp';
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Sustainability | NexusTower" };
 export const dynamic = "force-dynamic";
 
 function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
