@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { shipments } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -14,6 +15,11 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ shipmentId: string }> }) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { shipmentId } = await params;
 
   const shipment = await db.query.shipments.findFirst({

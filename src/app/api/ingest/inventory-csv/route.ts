@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { inventoryItems } from "@/db/schema";
 import { z } from "zod";
@@ -28,6 +29,11 @@ interface InventoryRow {
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
 export async function POST(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;

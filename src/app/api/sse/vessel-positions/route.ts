@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { vesselPositions } from "@/db/schema";
 import { desc, inArray } from "drizzle-orm";
@@ -6,6 +7,11 @@ import { desc, inArray } from "drizzle-orm";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const { searchParams } = new URL(req.url);
   const mmsis = searchParams.get("mmsis")?.split(",") || [];
 
