@@ -18,9 +18,7 @@ export async function POST(req: Request) {
   try {
     await assertWithinBudget(userId);
   } catch (error) {
-    return new Response(error instanceof Error ? error.message : 'Budget exceeded', {
-      status: 429,
-    });
+    return new Response('Budget exceeded', { status: 429 });
   }
 
   const { messages: uiMessages } = await req.json();

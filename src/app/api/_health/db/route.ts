@@ -15,7 +15,7 @@ export async function GET() {
     console.error("DB Health Check Failed:", error);
     return NextResponse.json({
       status: "error",
-      message: error instanceof Error ? error.message : "Unknown error",
+      message: "Database health check failed",
     }, { status: 500 });
   }
 }

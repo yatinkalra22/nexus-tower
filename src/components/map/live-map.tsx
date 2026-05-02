@@ -2,6 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
+function escapeHtml(str: string | number): string {
+  return String(str).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!
+  );
+}
+
 interface Position {
   mmsi: string;
   latitude: number;
@@ -105,8 +111,8 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
               className: "dark-popup",
             }).setHTML(
               `<div style="background:#1e1e2e;color:#e0e0e0;padding:8px 12px;border-radius:8px;font-family:monospace;font-size:12px;min-width:140px;">
-                <div style="font-weight:600;color:#38BDF8;margin-bottom:4px;">MMSI ${pos.mmsi}</div>
-                <div style="color:#a0a0b0;">Speed: ${pos.speed} kn</div>
+                <div style="font-weight:600;color:#38BDF8;margin-bottom:4px;">MMSI ${escapeHtml(pos.mmsi)}</div>
+                <div style="color:#a0a0b0;">Speed: ${escapeHtml(pos.speed)} kn</div>
               </div>`
             );
 

@@ -13,10 +13,13 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const mmsis = searchParams.get("mmsis")?.split(",") || [];
+  const MMSI_PATTERN = /^\d{9}$/;
+  const MAX_MMSIS = 50;
+  const rawMmsis = searchParams.get("mmsis")?.split(",") || [];
+  const mmsis = rawMmsis.filter(m => MMSI_PATTERN.test(m)).slice(0, MAX_MMSIS);
 
   if (mmsis.length === 0) {
-    return new Response("MMSIs required", { status: 400 });
+    return new Response("Valid MMSIs required (9-digit numbers)", { status: 400 });
   }
 
   const encoder = new TextEncoder();
