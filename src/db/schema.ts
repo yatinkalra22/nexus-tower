@@ -95,6 +95,20 @@ export const exceptions = sqliteTable("exceptions", {
   shipmentIdx: index("exceptions_shipment_idx").on(table.shipmentId),
 }));
 
+export const routeWaypointsRelations = relations(routeWaypoints, ({ one }) => ({
+  shipment: one(shipments, {
+    fields: [routeWaypoints.shipmentId],
+    references: [shipments.id],
+  }),
+}));
+
+export const exceptionsRelations = relations(exceptions, ({ one }) => ({
+  shipment: one(shipments, {
+    fields: [exceptions.shipmentId],
+    references: [shipments.id],
+  }),
+}));
+
 export const eventsAudit = sqliteTable("events_audit", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   actorUserId: text("actor_user_id").notNull(),

@@ -12,7 +12,9 @@ export function TokenMeter() {
     try {
       const res = await fetch("/api/usage");
       const data = await res.json();
-      setUsage(data);
+      if (data && typeof data.used === "number" && typeof data.budget === "number") {
+        setUsage(data);
+      }
     } catch (error) {
       console.error("Usage fetch failed");
     } finally {
