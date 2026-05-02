@@ -35,6 +35,14 @@ export async function deleteShipment(id: string) {
   revalidatePath("/dashboard/shipments");
 }
 
+export async function deleteShipments(ids: string[]) {
+  if (ids.length === 0) return;
+  const { inArray } = await import("drizzle-orm");
+  await db.delete(shipments).where(inArray(shipments.id, ids));
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/shipments");
+}
+
 export async function getShipments() {
   return db.query.shipments.findMany({
     orderBy: (shipments, { desc }) => [desc(shipments.createdAt)],

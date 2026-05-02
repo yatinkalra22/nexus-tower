@@ -1,8 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { shipments, ports, carriers, vessels } from "@/db/schema";
+import { shipments, ports, carriers, vessels, vesselPositions, routeWaypoints, exceptions, eventsAudit } from "@/db/schema";
 import { revalidatePath } from "next/cache";
+import { auth } from "@clerk/nextjs/server";
 
 const DEMO_PORTS = [
   { id: "SGSIN", name: "Singapore", country: "SG", latitude: 1.2644, longitude: 103.8200 },
@@ -60,11 +61,43 @@ function randomId(): string {
 
 function randomEta(): Date {
   const now = Date.now();
-  const offsetDays = Math.floor(Math.random() * 30) - 5; // -5 to +25 days
+  const offsetDays = Math.floor(Math.random() * 30) - 5;
   return new Date(now + offsetDays * 86400000);
 }
 
+// Interpolate a position between two ports (simulate vessel in transit)
+function interpolatePosition(
+  origin: { latitude: number; longitude: number },
+  dest: { latitude: number; longitude: number },
+  progress: number // 0-1
+) {
+  return {
+    latitude: origin.latitude + (dest.latitude - origin.latitude) * progress + (Math.random() - 0.5) * 2,
+    longitude: origin.longitude + (dest.longitude - origin.longitude) * progress + (Math.random() - 0.5) * 2,
+  };
+}
+
+// Generate waypoints along a route between two ports
+function generateWaypoints(
+  origin: { latitude: number; longitude: number },
+  dest: { latitude: number; longitude: number },
+  count: number
+) {
+  const waypoints = [];
+  for (let i = 0; i <= count; i++) {
+    const progress = i / count;
+    const pos = interpolatePosition(origin, dest, progress);
+    waypoints.push({
+      latitude: Number(pos.latitude.toFixed(4)),
+      longitude: Number(pos.longitude.toFixed(4)),
+    });
+  }
+  return waypoints;
+}
+
 export async function generateDemoData() {
+  const { userId } = await auth();
+
   // Seed reference tables (upsert to avoid conflicts)
   for (const port of DEMO_PORTS) {
     await db.insert(ports).values(port).onConflictDoNothing();
@@ -78,6 +111,7 @@ export async function generateDemoData() {
 
   // Generate 6 randomized shipments
   const usedNames = new Set<string>();
+  const usedVessels = new Set<string>();
   const generated: string[] = [];
 
   for (let i = 0; i < 6; i++) {
@@ -90,9 +124,16 @@ export async function generateDemoData() {
     let dest = randomPick(DEMO_PORTS);
     while (dest.id === origin.id) dest = randomPick(DEMO_PORTS);
 
-    const vessel = randomPick(DEMO_VESSELS);
+    // Pick a unique vessel for each shipment
+    let vessel = randomPick(DEMO_VESSELS);
+    while (usedVessels.has(vessel.mmsi) && usedVessels.size < DEMO_VESSELS.length) {
+      vessel = randomPick(DEMO_VESSELS);
+    }
+    usedVessels.add(vessel.mmsi);
+
     const carrier = randomPick(DEMO_CARRIERS);
     const id = randomId();
+    const hasVessel = status !== "cancelled" && status !== "pending";
 
     await db.insert(shipments).values({
       id,
@@ -101,15 +142,85 @@ export async function generateDemoData() {
       originPortId: origin.id,
       destinationPortId: dest.id,
       carrierId: carrier.id,
-      vesselMmsi: status === "cancelled" ? undefined : vessel.mmsi,
+      vesselMmsi: hasVessel ? vessel.mmsi : undefined,
       eta: status === "arrived" ? new Date(Date.now() - 86400000) : randomEta(),
     }).onConflictDoNothing();
 
     generated.push(id);
+
+    // Seed vessel positions for in_transit and delayed shipments
+    if (hasVessel && (status === "in_transit" || status === "delayed" || status === "arrived")) {
+      const progress = status === "arrived" ? 0.95 : status === "delayed" ? 0.3 : 0.4 + Math.random() * 0.4;
+      const pos = interpolatePosition(origin, dest, progress);
+      const speed = status === "delayed" ? 2 + Math.random() * 3 : 12 + Math.random() * 6;
+      const heading = Math.atan2(dest.longitude - origin.longitude, dest.latitude - origin.latitude) * (180 / Math.PI);
+
+      await db.insert(vesselPositions).values({
+        mmsi: vessel.mmsi,
+        latitude: Number(pos.latitude.toFixed(4)),
+        longitude: Number(pos.longitude.toFixed(4)),
+        speed: Number(speed.toFixed(1)),
+        heading: Number(((heading + 360) % 360).toFixed(1)),
+        timestamp: new Date(),
+      });
+    }
+
+    // Seed route waypoints
+    if (status !== "cancelled") {
+      const wps = generateWaypoints(origin, dest, 5);
+      for (let seq = 0; seq < wps.length; seq++) {
+        await db.insert(routeWaypoints).values({
+          shipmentId: id,
+          sequence: seq,
+          latitude: wps[seq].latitude,
+          longitude: wps[seq].longitude,
+          estimatedTimestamp: new Date(Date.now() + seq * 3 * 86400000),
+        });
+      }
+    }
+
+    // Seed exceptions for delayed shipments
+    if (status === "delayed") {
+      const exceptionTypes = [
+        { type: "weather", severity: "high" as const, description: `Severe storm warning on route ${origin.id} → ${dest.id}. Vessel speed reduced to < 5 knots.` },
+        { type: "geopolitical", severity: "critical" as const, description: `Port congestion at ${dest.id} due to labor strike. Expected 48h delay.` },
+        { type: "delay", severity: "medium" as const, description: `Vessel ${vessel.name} reporting mechanical issue. ETA pushed by 72 hours.` },
+      ];
+      const exc = randomPick(exceptionTypes);
+      await db.insert(exceptions).values({
+        id: `EXC-${Math.floor(1000 + Math.random() * 9000)}`,
+        shipmentId: id,
+        type: exc.type,
+        severity: exc.severity,
+        description: exc.description,
+        status: "open",
+      });
+    }
+  }
+
+  // Seed sample audit events
+  if (userId) {
+    const auditActions = [
+      { action: "execute_tool", tool: "queryShipments", outcome: "approved", payload: '{"status":"all"}' },
+      { action: "execute_tool", tool: "getWeatherOnRoute", outcome: "approved", payload: '{"lat":1.26,"lon":103.82}' },
+      { action: "execute_tool", tool: "scanGdeltDisruptions", outcome: "approved", payload: '{"lat":51.92,"lon":4.47}' },
+    ];
+    for (let j = 0; j < auditActions.length; j++) {
+      const a = auditActions[j];
+      await db.insert(eventsAudit).values({
+        actorUserId: userId,
+        action: a.action,
+        tool: a.tool,
+        outcome: a.outcome,
+        payload: a.payload,
+        timestamp: new Date(Date.now() - (auditActions.length - j) * 600000), // 10 min apart
+      });
+    }
   }
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/shipments");
+  revalidatePath("/dashboard/risk");
 
   return { count: generated.length, ids: generated };
 }
