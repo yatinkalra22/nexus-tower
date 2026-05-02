@@ -127,8 +127,11 @@ Use the values in [`.env.local.example`](.env.local.example) as the template for
 
 ## Documentation
 
-- [Architecture](docs/PLAN.md)
+- [Architecture & Build Log](docs/PLAN.md)
+- [API Reference](docs/API.md)
+- [MCP Integration Guide](docs/MCP.md)
 - [Key Setup Guide](docs/KEYS-SETUP.md)
+- [Demo Script](docs/DEMO-SCRIPT.md)
 
 ## License
 
