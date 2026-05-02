@@ -3,7 +3,9 @@ import { createClient } from '@libsql/client';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+}
 
 const AIS_WS_URL = 'wss://stream.aisstream.io/v0/stream';
 
