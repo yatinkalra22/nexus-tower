@@ -4,23 +4,80 @@ import { useChat } from '@ai-sdk/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, Terminal, Bot, Loader2 } from 'lucide-react';
+import { Send, Trash2 } from 'lucide-react';
 import { ToolCallCard } from '@/components/agent/tool-call-card';
 import { ApprovalCard } from '@/components/agent/approval-card';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import type { UIMessage } from 'ai';
 
 export default function AgentPage() {
-  const { messages, sendMessage, status, error } = useChat();
+  const [initialMessages, setInitialMessages] = useState<UIMessage[] | undefined>(undefined);
+  const [loaded, setLoaded] = useState(false);
+
+  // Load persisted messages on mount
+  useEffect(() => {
+    fetch('/api/chat-history')
+      .then(r => r.json())
+      .then(data => {
+        if (data.messages?.length > 0) {
+          setInitialMessages(data.messages);
+        }
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  if (!loaded) {
+    return (
+      <div className="flex flex-col h-[calc(100dvh-8rem)] gap-4 animate-fade-in">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Agent</h1>
+          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            AI-powered disruption response
+          </span>
+        </div>
+        <div className="flex-1 border border-border/50 rounded-xl bg-card flex items-center justify-center">
+          <span className="text-xs text-muted-foreground/40 font-mono">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return <AgentChat initialMessages={initialMessages} />;
+}
+
+function AgentChat({ initialMessages }: { initialMessages?: UIMessage[] }) {
+  const { messages, sendMessage, status, error, setMessages } = useChat({
+    messages: initialMessages,
+  });
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prevLengthRef = useRef(messages.length);
 
   const isLoading = status === 'submitted' || status === 'streaming';
+
+  // Save messages to DB when a response completes
+  const saveMessages = useCallback((msgs: UIMessage[]) => {
+    fetch('/api/chat-history', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: msgs }),
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Save when status goes from streaming/submitted to ready (response complete)
+  useEffect(() => {
+    if (status === 'ready' && messages.length > 0 && messages.length !== prevLengthRef.current) {
+      prevLengthRef.current = messages.length;
+      saveMessages(messages);
+    }
+  }, [status, messages, saveMessages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,14 +86,31 @@ export default function AgentPage() {
     setInput('');
   };
 
+  const handleClear = async () => {
+    setMessages([]);
+    prevLengthRef.current = 0;
+    await fetch('/api/chat-history', { method: 'DELETE' }).catch(() => {});
+  };
+
   return (
     <div className="flex flex-col h-[calc(100dvh-8rem)] gap-4 animate-fade-in">
       {/* Header */}
-      <div className="flex items-baseline gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Agent</h1>
-        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
-          AI-powered disruption response
-        </span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Agent</h1>
+          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            AI-powered disruption response
+          </span>
+        </div>
+        {messages.length > 0 && (
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-1.5 rounded-lg border border-border/50 bg-white/[0.03] px-2.5 py-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:border-red-400/30 transition-colors"
+          >
+            <Trash2 className="size-3" />
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Chat container */}
@@ -63,7 +137,8 @@ export default function AgentPage() {
             {messages.map((msg) => {
               const textParts = msg.parts.filter(p => p.type === 'text');
               const toolParts = msg.parts.filter(p => p.type.startsWith('tool-'));
-              const textContent = textParts.map(p => p.type === 'text' ? p.text : '').join('');
+              const rawText = textParts.map(p => p.type === 'text' ? p.text : '').join('');
+              const textContent = rawText.replace(/<thinking>[\s\S]*?<\/thinking>\s*/g, '').trim();
 
               return (
                 <div key={msg.id} className="flex flex-col gap-2.5">

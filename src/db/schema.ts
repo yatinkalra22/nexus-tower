@@ -157,6 +157,12 @@ export const agentTokenUsage = sqliteTable("agent_token_usage", {
   userDateUniq: uniqueIndex("agent_token_usage_user_date_uniq").on(table.userId, table.date),
 }));
 
+export const chatSessions = sqliteTable("chat_sessions", {
+  userId: text("user_id").primaryKey(),
+  messages: text("messages").notNull(), // JSON-stringified UIMessage[]
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+});
+
 export const mcpTokens = sqliteTable("mcp_tokens", {
   token: text("token").primaryKey(),
   userId: text("user_id").notNull(),
