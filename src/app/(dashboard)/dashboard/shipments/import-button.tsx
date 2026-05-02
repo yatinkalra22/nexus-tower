@@ -35,7 +35,7 @@ export function ImportCSVButton() {
       } else {
         toast.error(result.error || "Failed to import CSV");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred during upload");
     } finally {
       setLoading(false);

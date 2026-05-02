@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import type { } from "drizzle-orm/libsql";
 import * as dotenv from "dotenv";
 import * as path from "path";
 

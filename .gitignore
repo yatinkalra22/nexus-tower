@@ -45,3 +45,7 @@ next-env.d.ts
 /docs/PLAN.md
 /docs/DEMO-SCRIPT.md
 /docs/DEVPOST.md
+
+# submission-only files (not part of codebase)
+/docs/NexusTower-Pitch.pptx
+/docs/WINNING-STRATEGY.md

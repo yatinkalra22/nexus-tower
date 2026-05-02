@@ -19,7 +19,7 @@ export function TokenMeter() {
       if (data && typeof data.used === "number" && typeof data.budget === "number") {
         setUsage(data);
       }
-    } catch (error) {
+    } catch {
       console.error("Usage fetch failed");
     } finally {
       setLoading(false);
@@ -27,8 +27,9 @@ export function TokenMeter() {
   }, []);
 
   useEffect(() => {
-    fetchUsage();
-    const interval = setInterval(fetchUsage, 30000); // Poll every 30s
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch, setState is not synchronous
+    void fetchUsage();
+    const interval = setInterval(() => void fetchUsage(), 30000);
     return () => clearInterval(interval);
   }, [fetchUsage]);
 

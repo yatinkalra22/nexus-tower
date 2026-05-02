@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -35,7 +35,7 @@ export function ImportInventoryCSVButton() {
       } else {
         toast.error(result.error || "Failed to import CSV");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred during upload");
     } finally {
       setLoading(false);

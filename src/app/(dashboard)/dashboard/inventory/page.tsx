@@ -4,7 +4,7 @@ import { desc } from "drizzle-orm";
 import { Package, AlertOctagon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+// Badge reserved for future severity indicators
 import { ImportInventoryCSVButton } from "./import-button";
 
 import type { Metadata } from "next";

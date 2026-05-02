@@ -1,8 +1,8 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { db } from "@/db";
-import { shipments, vesselPositions, routeWaypoints, exceptions } from "@/db/schema";
-import { eq, desc, and, ne } from "drizzle-orm";
+import { shipments, vesselPositions } from "@/db/schema";
+import { eq, desc, ne } from "drizzle-orm";
 import { getGdeltEvents } from "@/server/enrich/gdelt";
 import { getWeatherForPoint } from "@/server/enrich/weather";
 

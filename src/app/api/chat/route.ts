@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
   try {
     await assertWithinBudget(userId);
-  } catch (error) {
+  } catch {
     return new Response('Budget exceeded', { status: 429 });
   }
 
@@ -59,8 +59,8 @@ export async function POST(req: Request) {
         if (usage) {
           await recordUsage(userId, usage.inputTokens || 0, usage.outputTokens || 0);
         }
-      } catch (error) {
-        console.error('Failed to persist agent run or usage:', error);
+      } catch (err) {
+        console.error('Failed to persist agent run or usage:', err);
       }
     },
   });

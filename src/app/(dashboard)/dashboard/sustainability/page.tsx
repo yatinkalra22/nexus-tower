@@ -1,9 +1,6 @@
-import { requireUser } from '@/lib/auth';
 import { db } from '@/db';
-import { shipments } from '@/db/schema';
 import { Leaf, Info, FileJson } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -12,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { computeGwp, EMISSION_FACTORS } from '@/lib/analytics/gwp';
@@ -31,7 +29,6 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
 }
 
 export default async function SustainabilityPage() {
-  const user = await requireUser();
   const allShipments = await db.query.shipments.findMany({
     limit: 20,
     orderBy: (s, { desc }) => [desc(s.createdAt)],

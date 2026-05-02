@@ -27,7 +27,8 @@ export default function McpSettingsPage() {
   }, []);
 
   useEffect(() => {
-    fetchTokens();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch, setState is not synchronous
+    void fetchTokens();
   }, [fetchTokens]);
 
   const handleCreate = async () => {
@@ -38,7 +39,7 @@ export default function McpSettingsPage() {
       toast.success("Token created. Copy it now, it won't be shown again.");
       setNewTokenName("");
       fetchTokens();
-    } catch (err) {
+    } catch {
       toast.error("Failed to create token");
     } finally {
       setLoading(false);

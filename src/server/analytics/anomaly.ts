@@ -18,7 +18,6 @@ export async function detectAnomalies(mmsi: string) {
   if (positions.length < 2) return;
 
   const latest = positions[0];
-  const previous = positions[1];
 
   // 1. Detect Speed Anomaly
   // If current speed is < 20% of the average of previous 10, flag it

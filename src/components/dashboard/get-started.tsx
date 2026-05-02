@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { GenerateDemoButton } from "@/components/dashboard/generate-demo-button";
@@ -8,11 +8,10 @@ import { GenerateDemoButton } from "@/components/dashboard/generate-demo-button"
 const STORAGE_KEY = "nexustower-onboarding-dismissed";
 
 export function GetStartedBanner() {
-  const [dismissed, setDismissed] = useState(true); // default hidden to avoid flash
-
-  useEffect(() => {
-    setDismissed(localStorage.getItem(STORAGE_KEY) === "true");
-  }, []);
+  const [dismissed, setDismissed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem(STORAGE_KEY) === "true";
+  });
 
   if (dismissed) return null;
 

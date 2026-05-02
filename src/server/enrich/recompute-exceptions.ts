@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { shipments, routeWaypoints, exceptions } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { getPort, calculateSeaWaypoints, getOsrmRoute } from "./route";
 import { getWeatherForPoint } from "./weather";
 import { getGdeltEvents } from "./gdelt";

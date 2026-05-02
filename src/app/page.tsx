@@ -23,9 +23,9 @@ const pillars = [
 ];
 
 const metrics = [
-  { label: 'Live AIS feed', value: '1 stream' },
-  { label: 'Operational rails', value: '1 audit log' },
-  { label: 'Approval latency', value: 'Human-paced' },
+  { label: 'Data sources', value: '5 live APIs' },
+  { label: 'Agent tools', value: '12 actions' },
+  { label: 'Approval latency', value: '<2s HITL' },
 ];
 
 export default async function RootPage() {
@@ -125,6 +125,18 @@ export default async function RootPage() {
                   {metric.value}
                 </span>
               </div>
+            ))}
+          </div>
+
+          {/* ── Tech badges ── */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {['Next.js 16', 'React 19', 'Claude 3.5 Sonnet', 'AI SDK v6', 'MCP', 'Turso', 'MapLibre GL', 'Clerk'].map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-border/50 bg-white/[0.03] px-3 py-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground/70"
+              >
+                {tech}
+              </span>
             ))}
           </div>
         </div>

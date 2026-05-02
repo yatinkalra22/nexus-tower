@@ -2,11 +2,9 @@ import { getShipment, deleteShipment } from '@/server/shipments';
 import { notFound, redirect } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Trash2, MapPin, Ship, Calendar } from 'lucide-react';
-import Link from 'next/link';
-import { revalidatePath } from 'next/cache';
 
 import { LiveMap } from '@/components/map/live-map';
 

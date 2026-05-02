@@ -1,7 +1,7 @@
 import { db } from "@/db";
-import { exceptions, shipments, vesselPositions } from "@/db/schema";
-import { eq, desc, ne, and, count } from "drizzle-orm";
-import { AlertTriangle, Activity, Anchor, TrendingDown } from "lucide-react";
+import { exceptions, shipments } from "@/db/schema";
+import { eq, desc, count, and } from "drizzle-orm";
+import { AlertTriangle, Activity, TrendingDown } from "lucide-react";
 import Link from "next/link";
 
 import type { Metadata } from "next";

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 interface ApprovalCardProps {
   action: string;
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
   onExecuted?: (outcome: string) => void;
 }
 
@@ -31,7 +31,7 @@ export function ApprovalCard({ action, payload, onExecuted }: ApprovalCardProps)
       } else {
         toast.error(result.error || "Execution failed");
       }
-    } catch (error) {
+    } catch {
       toast.error("Network error");
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export function ApprovalCard({ action, payload, onExecuted }: ApprovalCardProps)
         <p className="text-sm text-foreground/80 leading-relaxed">
           Agent proposes{" "}
           <span className="font-mono text-foreground">{action}</span>
-          {payload.shipmentId && (
+          {typeof payload.shipmentId === "string" && (
             <>
               {" "}for shipment{" "}
               <span className="font-mono text-foreground">{String(payload.shipmentId)}</span>

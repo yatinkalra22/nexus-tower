@@ -35,7 +35,7 @@ export default function NewShipmentPage() {
       await createShipment(values);
       toast.success("Shipment created successfully");
       router.push("/dashboard/shipments");
-    } catch (error) {
+    } catch {
       toast.error("Failed to create shipment");
     }
   }

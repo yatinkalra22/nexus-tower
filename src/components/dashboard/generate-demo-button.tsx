@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2 } from "lucide-react";
-import { generateDemoData } from "@/server/demo-data";
+import { seedScenario } from "@/server/seed-scenario";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -14,10 +14,10 @@ export function GenerateDemoButton({ variant = "default" }: { variant?: "default
   const handleGenerate = async () => {
     setLoading(true);
     try {
-      const result = await generateDemoData();
+      const result = await seedScenario();
       toast.success(`Generated ${result.count} demo shipments with live vessel tracking.`);
       router.refresh();
-    } catch (error) {
+    } catch {
       toast.error("Failed to generate demo data");
     } finally {
       setLoading(false);

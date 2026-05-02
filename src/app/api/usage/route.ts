@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const usage = await getDailyUsage(userId);
     return NextResponse.json(usage);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch usage" }, { status: 500 });
   }
 }

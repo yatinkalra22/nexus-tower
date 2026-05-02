@@ -5,7 +5,7 @@ import { shipments, ports, carriers, vessels, vesselPositions, routeWaypoints, e
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 
-const DEMO_PORTS = [
+const SEED_PORTS = [
   { id: "SGSIN", name: "Singapore", country: "SG", latitude: 1.2644, longitude: 103.8200 },
   { id: "NLRTM", name: "Rotterdam", country: "NL", latitude: 51.9225, longitude: 4.4792 },
   { id: "CNSHA", name: "Shanghai", country: "CN", latitude: 31.2304, longitude: 121.4737 },
@@ -18,7 +18,7 @@ const DEMO_PORTS = [
   { id: "BRSSZ", name: "Santos", country: "BR", latitude: -23.9608, longitude: -46.3336 },
 ];
 
-const DEMO_CARRIERS = [
+const SEED_CARRIERS = [
   { id: "MSK", name: "Maersk Line", type: "sea" },
   { id: "CMA", name: "CMA CGM", type: "sea" },
   { id: "EVG", name: "Evergreen Marine", type: "sea" },
@@ -27,7 +27,7 @@ const DEMO_CARRIERS = [
 ];
 
 // Real active vessel MMSIs (large container ships)
-const DEMO_VESSELS = [
+const SEED_VESSELS = [
   { mmsi: "219018828", name: "MAERSK HALIFAX", type: "container", flag: "DK" },
   { mmsi: "477592400", name: "CMA CGM MARCO POLO", type: "container", flag: "HK" },
   { mmsi: "353136000", name: "EVER GIVEN", type: "container", flag: "PA" },
@@ -95,17 +95,17 @@ function generateWaypoints(
   return waypoints;
 }
 
-export async function generateDemoData() {
+export async function seedScenario() {
   const { userId } = await auth();
 
   // Seed reference tables (upsert to avoid conflicts)
-  for (const port of DEMO_PORTS) {
+  for (const port of SEED_PORTS) {
     await db.insert(ports).values(port).onConflictDoNothing();
   }
-  for (const carrier of DEMO_CARRIERS) {
+  for (const carrier of SEED_CARRIERS) {
     await db.insert(carriers).values(carrier).onConflictDoNothing();
   }
-  for (const vessel of DEMO_VESSELS) {
+  for (const vessel of SEED_VESSELS) {
     await db.insert(vessels).values(vessel).onConflictDoNothing();
   }
 
@@ -120,18 +120,18 @@ export async function generateDemoData() {
     usedNames.add(name);
 
     const status = STATUSES[i];
-    const origin = randomPick(DEMO_PORTS);
-    let dest = randomPick(DEMO_PORTS);
-    while (dest.id === origin.id) dest = randomPick(DEMO_PORTS);
+    const origin = randomPick(SEED_PORTS);
+    let dest = randomPick(SEED_PORTS);
+    while (dest.id === origin.id) dest = randomPick(SEED_PORTS);
 
     // Pick a unique vessel for each shipment
-    let vessel = randomPick(DEMO_VESSELS);
-    while (usedVessels.has(vessel.mmsi) && usedVessels.size < DEMO_VESSELS.length) {
-      vessel = randomPick(DEMO_VESSELS);
+    let vessel = randomPick(SEED_VESSELS);
+    while (usedVessels.has(vessel.mmsi) && usedVessels.size < SEED_VESSELS.length) {
+      vessel = randomPick(SEED_VESSELS);
     }
     usedVessels.add(vessel.mmsi);
 
-    const carrier = randomPick(DEMO_CARRIERS);
+    const carrier = randomPick(SEED_CARRIERS);
     const id = randomId();
     const hasVessel = status !== "cancelled" && status !== "pending";
 

@@ -35,6 +35,7 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
     initRef.current = true;
 
     let cancelled = false;
+    const markers = markersRef.current;
 
     (async () => {
       const maplibregl = (await import("maplibre-gl")).default;
@@ -145,7 +146,7 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
         mapRef.current.remove();
         mapRef.current = null;
       }
-      markersRef.current.clear();
+      markers.clear();
       initRef.current = false;
       fittedRef.current = false;
     };

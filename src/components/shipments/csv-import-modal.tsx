@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, Download, Loader2, CheckCircle, AlertTriangle, X } from "lucide-react";
+import { Upload, Download, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
@@ -225,7 +225,7 @@ export function CSVImportModal() {
                 Drag & drop a CSV file here, or click to browse
               </p>
               <p className="text-xs text-muted-foreground/40 mt-1">
-                Any format works — we'll help you map the columns
+                Any format works — we&apos;ll help you map the columns
               </p>
               <input
                 id="csv-file-input"

@@ -2,8 +2,6 @@
 
 import { db } from "@/db";
 import { ports, carriers } from "@/db/schema";
-import Papa from "papaparse";
-
 /**
  * Seeds a small set of major global ports and carriers.
  * Real production would fetch the full UN/LOCODE CSV (~100k rows).
