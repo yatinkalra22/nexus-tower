@@ -99,7 +99,6 @@ Use the values in [`.env.local.example`](.env.local.example) as the template for
 | `AISSTREAM_API_KEY`                 | aisstream.io account dashboard                 |
 | `OPENROUTESERVICE_API_KEY`          | OpenRouteService account                       |
 | `WITS_USER_NAME`                    | World Bank WITS account, if used               |
-| `CRON_SECRET`                       | Any secure random value you choose             |
 
 ## Available Scripts
 
@@ -123,9 +122,8 @@ Use the values in [`.env.local.example`](.env.local.example) as the template for
 
 1. Connect the repository to Vercel.
 2. Set the environment variables above in the Vercel project settings.
-3. Confirm `vercel.json` is deployed so `/api/cron/enrich` runs on schedule.
-4. Deploy the web app.
-5. Run the AIS ingestor as a separate long-lived process locally, or package `apps/ingestor/lambda.ts` for a scheduled Lambda window.
+3. Deploy the web app.
+4. Run the AIS ingestor as a separate long-lived process locally, or package `apps/ingestor/lambda.ts` for a scheduled Lambda window.
 
 ## Documentation
 
