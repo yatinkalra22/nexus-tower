@@ -22,6 +22,7 @@ export default async function DashboardPage() {
   let dataUnavailable = false;
   let recentShipments: Array<{ id: string; name: string; status: string | null; originPortId: string | null; destinationPortId: string | null }> = [];
   let recentActions: Array<{ id: number; tool: string | null; outcome: string | null; timestamp: Date | null }> = [];
+  let vesselMmsis: string[] = [];
 
   try {
     const [activeResult] = await db.select({ value: count() }).from(shipments).where(ne(shipments.status, "arrived"));
@@ -54,6 +55,7 @@ export default async function DashboardPage() {
       totalCo2e += computeGwp({ mode: s.vesselMmsi ? "sea_container" : "road_heavy_truck", distanceKm: distKm, weightKg: 20000 });
     }
     co2eLabel = `${Math.round(totalCo2e).toLocaleString()} kg`;
+    vesselMmsis = activeShipments.filter(s => s.vesselMmsi).map(s => s.vesselMmsi as string);
 
     recentShipments = await db.query.shipments.findMany({
       columns: { id: true, name: true, status: true, originPortId: true, destinationPortId: true },
@@ -144,14 +146,12 @@ export default async function DashboardPage() {
 
       {/* Main Grid: Map + Exception Feed */}
       <div className="grid gap-4 lg:grid-cols-5">
-        <div className="lg:col-span-3 rounded-xl border border-border/50 bg-card overflow-hidden">
-          <div className="flex items-center justify-between px-4 pt-3 pb-2">
+        <div className="lg:col-span-3">
+          <div className="flex items-center justify-between px-1 pb-2">
             <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Fleet Overview</span>
             <Link href="/dashboard/map" className="text-[11px] text-primary hover:underline">Full Map</Link>
           </div>
-          <div className="h-[340px]">
-            <LiveMap height="100%" />
-          </div>
+          <LiveMap mmsis={vesselMmsis} height="340px" />
         </div>
         <div className="lg:col-span-2 rounded-xl border border-border/50 bg-card p-4">
           <ExceptionFeed />

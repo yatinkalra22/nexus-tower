@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "maplibre-gl/dist/maplibre-gl.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -168,4 +169,24 @@
   .animate-fade-in {
     animation: fade-in-up 0.2s ease-out forwards;
   }
+}
+
+/* MapLibre dark popup overrides */
+.dark-popup .maplibregl-popup-content {
+  background: transparent;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+.dark-popup .maplibregl-popup-tip {
+  border-top-color: #1e1e2e;
+}
+.dark-popup .maplibregl-popup-close-button {
+  color: #a0a0b0;
+  font-size: 16px;
+  padding: 2px 6px;
+}
+.dark-popup .maplibregl-popup-close-button:hover {
+  color: #fff;
+  background: transparent;
 }

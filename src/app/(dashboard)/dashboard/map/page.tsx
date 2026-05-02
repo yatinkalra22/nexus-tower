@@ -13,7 +13,7 @@ export default async function GlobalMapPage() {
   const mmsis = activeShipments.map(s => s.vesselMmsi as string);
 
   return (
-    <div className="flex flex-col gap-4 h-full animate-fade-in">
+    <div className="flex flex-1 flex-col gap-4 animate-fade-in">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Global Fleet Map</h1>
@@ -24,8 +24,8 @@ export default async function GlobalMapPage() {
         </div>
       </div>
 
-      <div className="relative flex-1 min-h-[300px] md:min-h-[500px] rounded-xl border border-border/50 overflow-hidden">
-        <LiveMap mmsis={mmsis} height="100%" />
+      <div className="relative flex-1">
+        <LiveMap mmsis={mmsis} height="calc(100vh - 180px)" />
         {mmsis.length === 0 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 rounded-lg border border-border/50 bg-background/90 backdrop-blur px-3 py-2 text-xs text-muted-foreground">
             No vessels tracked yet. Attach MMSI numbers to shipments to see them here.
