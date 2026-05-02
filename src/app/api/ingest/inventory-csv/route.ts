@@ -46,6 +46,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "File too large. Maximum size is 2MB." }, { status: 413 });
     }
 
+    if (file.type && file.type !== "text/csv" && file.type !== "application/vnd.ms-excel") {
+      return NextResponse.json({ error: "Invalid file type. Only CSV files are accepted." }, { status: 415 });
+    }
+
     const text = await file.text();
     const { data, errors } = Papa.parse<InventoryRow>(text, {
       header: true,

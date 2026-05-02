@@ -3,23 +3,44 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { shipments, eventsAudit } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
+
+const executeSchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("reroute"),
+    payload: z.object({ shipmentId: z.string().min(1), newDestinationPortId: z.string().min(1) }),
+  }),
+  z.object({
+    action: z.literal("rebook"),
+    payload: z.object({ shipmentId: z.string().min(1), newCarrierId: z.string().min(1) }),
+  }),
+  z.object({
+    action: z.literal("notify"),
+    payload: z.object({ shipmentId: z.string().min(1), message: z.string().min(1) }),
+  }),
+]);
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) return new Response("Unauthorized", { status: 401 });
 
   const body = await req.json();
-  const { action, payload } = body;
-
-  if (!action || !["reroute", "rebook", "notify"].includes(action)) {
-    return NextResponse.json({ ok: false, error: "Invalid action" }, { status: 400 });
+  const parsed = executeSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ ok: false, error: "Invalid request", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  if (!payload?.shipmentId) {
-    return NextResponse.json({ ok: false, error: "Missing shipmentId in payload" }, { status: 400 });
-  }
+  const { action, payload } = parsed.data;
 
   try {
+    // Verify shipment exists before mutating
+    const shipment = await db.query.shipments.findFirst({
+      where: eq(shipments.id, payload.shipmentId),
+    });
+    if (!shipment) {
+      return NextResponse.json({ ok: false, error: "Shipment not found" }, { status: 404 });
+    }
+
     return await db.transaction(async (tx) => {
       let outcome = "";
 
