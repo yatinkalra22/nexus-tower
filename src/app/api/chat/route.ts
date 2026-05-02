@@ -1,6 +1,6 @@
 import { model } from '@/lib/bedrock';
 import { tools } from '@/lib/agent/tools';
-import { streamText, stepCountIs } from 'ai';
+import { streamText, stepCountIs, convertToModelMessages } from 'ai';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { agentRuns } from '@/db/schema';
@@ -23,8 +23,9 @@ export async function POST(req: Request) {
     });
   }
 
-  const { messages } = await req.json();
+  const { messages: uiMessages } = await req.json();
   const runId = uuidv4();
+  const messages = await convertToModelMessages(uiMessages);
 
   const result = streamText({
     model,
@@ -43,10 +44,13 @@ export async function POST(req: Request) {
     - Be concise, professional, and data-driven. No fluff.`,
     onFinish: async ({ text, steps, usage }) => {
       try {
+        const lastUserMsg = uiMessages[uiMessages.length - 1];
+        const promptText = lastUserMsg?.parts?.find((p: { type: string }) => p.type === 'text')?.text
+          ?? JSON.stringify(lastUserMsg);
         await db.insert(agentRuns).values({
           id: runId,
           userId,
-          prompt: messages[messages.length - 1].content ?? JSON.stringify(messages[messages.length - 1].parts),
+          prompt: promptText,
           response: text,
           steps: JSON.stringify(steps?.map(s => ({
             toolCalls: s.toolCalls,
