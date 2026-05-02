@@ -33,7 +33,7 @@ export default function RootLayout({
         className={`${jakarta.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
         suppressHydrationWarning
       >
-        <body className="min-h-full flex flex-col bg-background text-foreground">
+        <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
           {children}
           <Toaster />
         </body>
