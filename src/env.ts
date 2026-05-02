@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   server: {
@@ -13,13 +13,12 @@ export const env = createEnv({
     AISSTREAM_API_KEY: z.string().min(1),
     OPENROUTESERVICE_API_KEY: z.string().optional(),
     WITS_USER_NAME: z.string().optional(),
-    CRON_SECRET: z.string().min(1),
-    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1).default("/sign-in"),
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().min(1).default("/sign-up"),
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1).default('/sign-in'),
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().min(1).default('/sign-up'),
   },
   runtimeEnv: {
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
@@ -35,7 +34,6 @@ export const env = createEnv({
     AISSTREAM_API_KEY: process.env.AISSTREAM_API_KEY,
     OPENROUTESERVICE_API_KEY: process.env.OPENROUTESERVICE_API_KEY,
     WITS_USER_NAME: process.env.WITS_USER_NAME,
-    CRON_SECRET: process.env.CRON_SECRET,
     NODE_ENV: process.env.NODE_ENV,
   },
 });

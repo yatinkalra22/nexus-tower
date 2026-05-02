@@ -5,6 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { User, ShieldCheck } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AuditPage() {
   const logs = await db.query.eventsAudit.findMany({
     orderBy: [desc(eventsAudit.timestamp)],

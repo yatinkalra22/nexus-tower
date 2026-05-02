@@ -7,6 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ImportInventoryCSVButton } from "./import-button";
 
+export const dynamic = "force-dynamic";
+
 export default async function InventoryPage() {
   const items = await db.query.inventoryItems.findMany({
     orderBy: [desc(inventoryItems.sku)],

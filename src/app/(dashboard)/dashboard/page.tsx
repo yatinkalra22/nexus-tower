@@ -6,6 +6,8 @@ import { shipments, exceptions } from "@/db/schema";
 import { count, eq, ne } from "drizzle-orm";
 import { Ship, AlertTriangle, CheckCircle, Leaf } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const user = await requireUser();
 

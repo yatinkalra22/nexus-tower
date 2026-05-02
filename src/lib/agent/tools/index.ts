@@ -9,7 +9,7 @@ import { getWeatherForPoint } from "@/server/enrich/weather";
 export const tools = {
   queryShipments: tool({
     description: "List active shipments with their current status and IDs.",
-    parameters: z.object({
+    inputSchema: z.object({
       status: z.enum(["pending", "in_transit", "arrived", "delayed", "cancelled"]).optional(),
     }),
     execute: async ({ status }) => {
@@ -23,7 +23,7 @@ export const tools = {
 
   getShipment: tool({
     description: "Get detailed information about a specific shipment by its ID.",
-    parameters: z.object({
+    inputSchema: z.object({
       shipmentId: z.string(),
     }),
     execute: async ({ shipmentId }) => {
@@ -40,7 +40,7 @@ export const tools = {
 
   liveVesselPosition: tool({
     description: "Get the latest AIS position for a vessel by its MMSI.",
-    parameters: z.object({
+    inputSchema: z.object({
       mmsi: z.string(),
     }),
     execute: async ({ mmsi }) => {
@@ -54,7 +54,7 @@ export const tools = {
 
   getWeatherOnRoute: tool({
     description: "Get weather conditions for a specific point on a shipment's route.",
-    parameters: z.object({
+    inputSchema: z.object({
       lat: z.number(),
       lon: z.number(),
     }),
@@ -65,7 +65,7 @@ export const tools = {
 
   scanGdeltDisruptions: tool({
     description: "Scan for real-time geopolitical disruptions or news near coordinates.",
-    parameters: z.object({
+    inputSchema: z.object({
       lat: z.number(),
       lon: z.number(),
     }),
@@ -76,7 +76,7 @@ export const tools = {
 
   proposeReroute: tool({
     description: "Propose a reroute for a shipment to avoid a disruption. Returns a pending approval plan.",
-    parameters: z.object({
+    inputSchema: z.object({
       shipmentId: z.string(),
       newDestinationPortId: z.string(),
       reason: z.string(),
@@ -95,7 +95,7 @@ export const tools = {
 
   rebookCarrier: tool({
     description: "Rebook a shipment with a different carrier. Requires approval.",
-    parameters: z.object({
+    inputSchema: z.object({
       shipmentId: z.string(),
       newCarrierId: z.string(),
       reason: z.string(),
@@ -114,7 +114,7 @@ export const tools = {
 
   notifyClient: tool({
     description: "Send a notification to the client regarding a delay or change. Requires approval.",
-    parameters: z.object({
+    inputSchema: z.object({
       shipmentId: z.string(),
       message: z.string(),
     }),
@@ -130,7 +130,7 @@ export const tools = {
 
   computeGwp: tool({
     description: "Calculate Global Warming Potential (CO2e) for a shipment based on GLEC factors.",
-    parameters: z.object({
+    inputSchema: z.object({
       mode: z.enum(["sea_container", "road_heavy_truck", "air_freight", "rail_freight"]),
       distanceKm: z.number(),
       weightKg: z.number(),
@@ -148,7 +148,7 @@ export const tools = {
 
   getTariffRate: tool({
     description: "Get the current tariff or duty rate for a specific HS code between an origin and destination.",
-    parameters: z.object({
+    inputSchema: z.object({
       hsCode: z.string(),
       origin: z.string(),
       destination: z.string(),
@@ -168,7 +168,7 @@ export const tools = {
 
   checkInventory: tool({
     description: "Check the inventory status for a specific SKU, including on-hand quantity, safety stock, and reorder points.",
-    parameters: z.object({
+    inputSchema: z.object({
       sku: z.string(),
     }),
     execute: async ({ sku }) => {

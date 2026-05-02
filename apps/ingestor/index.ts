@@ -1,8 +1,8 @@
-import WebSocket from "ws";
+import { WebSocket } from "ws";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as dotenv from "dotenv";
-import path from "path";
+import * as path from "path";
 
 // Load env vars from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });

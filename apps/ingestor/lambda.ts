@@ -1,7 +1,7 @@
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { createClient } from '@libsql/client';
 import * as dotenv from 'dotenv';
-import path from 'path';
+import * as path from 'path';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });

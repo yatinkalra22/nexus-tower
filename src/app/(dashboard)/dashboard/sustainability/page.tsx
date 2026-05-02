@@ -1,13 +1,22 @@
-import { requireUser } from "@/lib/auth";
-import { db } from "@/db";
-import { shipments } from "@/db/schema";
-import { Leaf, Info, FileJson } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { computeGwp } from "@/lib/analytics/gwp";
+import { requireUser } from '@/lib/auth';
+import { db } from '@/db';
+import { shipments } from '@/db/schema';
+import { Leaf, Info, FileJson } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { computeGwp } from '@/lib/analytics/gwp';
+
+export const dynamic = "force-dynamic";
 
 export default async function SustainabilityPage() {
   const user = await requireUser();
@@ -17,11 +26,16 @@ export default async function SustainabilityPage() {
   });
 
   // Calculate some aggregate stats
-  const totalGwp = allShipments.reduce((acc, s) => acc + computeGwp({
-    mode: "sea_container",
-    distanceKm: 12000,
-    weightKg: 20000,
-  }), 0);
+  const totalGwp = allShipments.reduce(
+    (acc, s) =>
+      acc +
+      computeGwp({
+        mode: 'sea_container',
+        distanceKm: 12000,
+        weightKg: 20000,
+      }),
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -38,10 +52,14 @@ export default async function SustainabilityPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="bg-green-500/5 border-green-500/20">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-green-600">Total Footprint (MTD)</CardTitle>
+            <CardTitle className="text-sm font-medium text-green-600">
+              Total Footprint (MTD)
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-700">{totalGwp.toLocaleString()} kg CO₂e</div>
+            <div className="text-2xl font-bold text-green-700">
+              {totalGwp.toLocaleString()} kg CO₂e
+            </div>
             <p className="text-xs text-green-600/70 mt-1">+12% from last month</p>
           </CardContent>
         </Card>
@@ -84,23 +102,29 @@ export default async function SustainabilityPage() {
             <TableBody>
               {allShipments.map((s) => {
                 const gwp = computeGwp({
-                  mode: "sea_container",
+                  mode: 'sea_container',
                   distanceKm: 12000,
                   weightKg: 20000,
                 });
                 return (
                   <TableRow key={s.id}>
                     <TableCell className="font-medium">{s.id}</TableCell>
-                    <TableCell><Badge variant="outline">Sea</Badge></TableCell>
-                    <TableCell className="text-xs text-muted-foreground">GLEC Framework v3</TableCell>
-                    <TableCell className="text-right font-mono">{gwp.toLocaleString()} kg</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">Sea</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      GLEC Framework v3
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {gwp.toLocaleString()} kg
+                    </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/api/dpp/${s.id}`} target="_blank">
+                      <Link href={`/api/dpp/${s.id}`} target="_blank">
+                        <Button variant="ghost" size="sm">
                           <FileJson className="mr-2 size-4" />
                           View DPP
-                        </Link>
-                      </Button>
+                        </Button>
+                      </Link>
                     </TableCell>
                   </TableRow>
                 );
@@ -115,7 +139,7 @@ export default async function SustainabilityPage() {
         <div className="max-w-md">
           <h3 className="font-semibold">Jan-2026 EU Reporting Mandate</h3>
           <p className="text-sm text-muted-foreground mt-2">
-            NexusTower automatically generates the required GWP declaration for every shipment, 
+            NexusTower automatically generates the required GWP declaration for every shipment,
             allowing instant compliance with new EU Digital Product Passport regulations.
           </p>
         </div>

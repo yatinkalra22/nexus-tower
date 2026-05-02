@@ -1,11 +1,20 @@
-import { getShipments } from "@/server/shipments";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Plus, Upload } from "lucide-react";
-import Link from "next/link";
+import { getShipments } from '@/server/shipments';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Plus, Upload } from 'lucide-react';
+import Link from 'next/link';
 
-import { ImportCSVButton } from "./import-button";
+import { ImportCSVButton } from './import-button';
+
+export const dynamic = "force-dynamic";
 
 export default async function ShipmentsPage() {
   const shipments = await getShipments();
@@ -16,12 +25,12 @@ export default async function ShipmentsPage() {
         <h1 className="text-3xl font-bold">Shipments</h1>
         <div className="flex gap-2">
           <ImportCSVButton />
-          <Button size="sm" asChild>
-            <Link href="/dashboard/shipments/new">
+          <Link href="/dashboard/shipments/new">
+            <Button size="sm">
               <Plus className="mr-2 size-4" />
               New Shipment
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -54,13 +63,13 @@ export default async function ShipmentsPage() {
                   </TableCell>
                   <TableCell>{s.name}</TableCell>
                   <TableCell>
-                    <Badge variant={s.status === "delayed" ? "destructive" : "secondary"}>
+                    <Badge variant={s.status === 'delayed' ? 'destructive' : 'secondary'}>
                       {s.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{s.originPortId || "--"}</TableCell>
-                  <TableCell>{s.destinationPortId || "--"}</TableCell>
-                  <TableCell>{s.eta ? s.eta.toLocaleDateString() : "--"}</TableCell>
+                  <TableCell>{s.originPortId || '--'}</TableCell>
+                  <TableCell>{s.destinationPortId || '--'}</TableCell>
+                  <TableCell>{s.eta ? s.eta.toLocaleDateString() : '--'}</TableCell>
                 </TableRow>
               ))
             )}

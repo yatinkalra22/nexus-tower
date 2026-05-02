@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TariffSimulator } from "@/components/dashboard/tariff-simulator";
 
+export const dynamic = "force-dynamic";
+
 export default async function TariffsPage() {
   const cachedRates = await db.query.tariffRatesCache.findMany({
     orderBy: [desc(tariffRatesCache.updatedAt)],

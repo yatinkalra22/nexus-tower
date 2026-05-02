@@ -3,6 +3,8 @@ import { shipments } from "@/db/schema";
 import { ne, isNotNull, and } from "drizzle-orm";
 import { LiveMap } from "@/components/map/live-map";
 
+export const dynamic = "force-dynamic";
+
 export default async function GlobalMapPage() {
   const activeShipments = await db.query.shipments.findMany({
     where: and(ne(shipments.status, "arrived"), isNotNull(shipments.vesselMmsi)),
