@@ -8,9 +8,12 @@ import { Send, Trash2 } from 'lucide-react';
 import { ToolCallCard } from '@/components/agent/tool-call-card';
 import { ApprovalCard } from '@/components/agent/approval-card';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { UIMessage } from 'ai';
 
 export default function AgentPage() {
+  const searchParams = useSearchParams();
+  const prefillPrompt = searchParams.get('prompt') ?? undefined;
   const [initialMessages, setInitialMessages] = useState<UIMessage[] | undefined>(undefined);
   const [loaded, setLoaded] = useState(false);
 
@@ -43,14 +46,14 @@ export default function AgentPage() {
     );
   }
 
-  return <AgentChat initialMessages={initialMessages} />;
+  return <AgentChat initialMessages={initialMessages} prefillPrompt={prefillPrompt} />;
 }
 
-function AgentChat({ initialMessages }: { initialMessages?: UIMessage[] }) {
+function AgentChat({ initialMessages, prefillPrompt }: { initialMessages?: UIMessage[]; prefillPrompt?: string }) {
   const { messages, sendMessage, status, error, setMessages } = useChat({
     messages: initialMessages,
   });
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(prefillPrompt ?? '');
   const scrollRef = useRef<HTMLDivElement>(null);
   const prevLengthRef = useRef(messages.length);
 

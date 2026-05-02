@@ -4,7 +4,6 @@ import { Plus, Ship } from 'lucide-react';
 import Link from 'next/link';
 
 import { CSVImportModal } from '@/components/shipments/csv-import-modal';
-import { GenerateDemoButton } from '@/components/dashboard/generate-demo-button';
 import { ShipmentsTable } from '@/components/shipments/shipments-table';
 
 import type { Metadata } from "next";
@@ -42,7 +41,6 @@ export default async function ShipmentsPage() {
                 <p className="text-xs text-muted-foreground/60 mt-1">Import a CSV file or create your first shipment to start tracking.</p>
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                <GenerateDemoButton />
                 <CSVImportModal />
                 <Link href="/dashboard/shipments/new">
                   <Button size="sm" variant="outline" className="border-border/50">

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { GenerateDemoButton } from "@/components/dashboard/generate-demo-button";
 
 const STORAGE_KEY = "nexustower-onboarding-dismissed";
 
@@ -46,7 +45,6 @@ export function GetStartedBanner() {
             </p>
           </div>
           <div className="flex gap-2 shrink-0">
-            <GenerateDemoButton variant="outline" />
             <Link
               href="/dashboard/shipments"
               className="rounded-lg border border-border/50 bg-white/[0.03] px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"

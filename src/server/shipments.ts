@@ -62,6 +62,8 @@ export async function getShipment(id: string) {
       destinationPort: true,
       carrier: true,
       vessel: true,
+      exceptions: true,
+      waypoints: true,
     },
   });
 }

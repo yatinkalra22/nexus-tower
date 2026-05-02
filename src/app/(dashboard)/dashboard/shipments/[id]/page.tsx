@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Trash2, MapPin, Ship, Calendar } from 'lucide-react';
+import { Trash2, MapPin, Ship, Calendar, AlertTriangle, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
 
 import { LiveMap } from '@/components/map/live-map';
 
@@ -16,6 +17,12 @@ function statusColor(status: string) {
   if (status === 'in_transit') return { dot: 'bg-sky-400', text: 'text-sky-400', bg: 'bg-sky-400/10' };
   if (status === 'cancelled') return { dot: 'bg-zinc-400', text: 'text-zinc-400', bg: 'bg-zinc-400/10' };
   return { dot: 'bg-amber-400', text: 'text-amber-400', bg: 'bg-amber-400/10' };
+}
+
+function severityColor(severity: string) {
+  if (severity === 'critical') return 'text-red-400 bg-red-400/10';
+  if (severity === 'high') return 'text-amber-400 bg-amber-400/10';
+  return 'text-yellow-400 bg-yellow-400/10';
 }
 
 export default async function ShipmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +40,12 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
   }
 
   const sc = statusColor(shipment.status ?? 'pending');
+  const openExceptions = (shipment.exceptions ?? []).filter(e => e.status === 'open');
+  const waypoints = (shipment.waypoints ?? [])
+    .sort((a, b) => a.sequence - b.sequence)
+    .map(w => ({ latitude: w.latitude, longitude: w.longitude }));
+
+  const agentPrompt = `Analyze shipment ${shipment.id} "${shipment.name}" from ${shipment.originPort?.name ?? shipment.originPortId} to ${shipment.destinationPort?.name ?? shipment.destinationPortId}. Check weather, disruptions, and current vessel status.`;
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
@@ -47,6 +60,12 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
           <p className="text-sm text-muted-foreground mt-0.5">{shipment.name}</p>
         </div>
         <div className="flex gap-2">
+          <Link href={`/dashboard/agent?prompt=${encodeURIComponent(agentPrompt)}`}>
+            <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/5">
+              <MessageSquare className="mr-2 size-4" />
+              Ask Agent
+            </Button>
+          </Link>
           <form action={handleDelete}>
             <Button variant="destructive" size="sm" type="submit">
               <Trash2 className="mr-2 size-4" />
@@ -55,6 +74,26 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
           </form>
         </div>
       </div>
+
+      {/* Exceptions Alert */}
+      {openExceptions.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {openExceptions.map((exc) => (
+            <div key={exc.id} className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+              <AlertTriangle className="size-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge variant="outline" className={`${severityColor(exc.severity ?? 'medium')} border-transparent text-[10px] uppercase`}>
+                    {exc.severity}
+                  </Badge>
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase">{exc.type}</span>
+                </div>
+                <p className="text-sm text-foreground/80">{exc.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="rounded-xl border border-border/50 bg-card p-4">
@@ -90,9 +129,9 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
             </div>
             <Separator />
             <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Vessel MMSI</span>
+              <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Vessel</span>
               <span className="font-medium">{shipment.vessel?.name ?? shipment.vesselMmsi ?? 'Not specified'}</span>
-              {shipment.vessel?.name && <span className="text-xs text-muted-foreground font-mono">{shipment.vesselMmsi}</span>}
+              {shipment.vessel?.name && <span className="text-xs text-muted-foreground font-mono">MMSI {shipment.vesselMmsi}</span>}
             </div>
           </CardContent>
         </Card>
@@ -119,7 +158,11 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
       </div>
 
       <div className="rounded-xl border border-border/50 overflow-hidden">
-        <LiveMap mmsis={shipment.vesselMmsi ? [shipment.vesselMmsi] : []} height="400px" />
+        <LiveMap
+          mmsis={shipment.vesselMmsi ? [shipment.vesselMmsi] : []}
+          waypoints={waypoints}
+          height="400px"
+        />
       </div>
     </div>
   );

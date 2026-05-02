@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { shipments, ports, carriers, vessels, vesselPositions, routeWaypoints, exceptions, eventsAudit } from "@/db/schema";
+import { shipments, ports, carriers, vessels, vesselPositions, routeWaypoints, exceptions, eventsAudit, tariffRatesCache } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 
@@ -218,9 +218,28 @@ export async function seedScenario() {
     }
   }
 
+  // Seed common tariff trade lanes
+  const tariffSeeds = [
+    { hsCode: "851712", origin: "CN", destination: "US", rate: 2.5 },
+    { hsCode: "870323", origin: "DE", destination: "US", rate: 2.5 },
+    { hsCode: "300490", origin: "IN", destination: "GB", rate: 0.0 },
+    { hsCode: "720839", origin: "KR", destination: "NL", rate: 0.0 },
+    { hsCode: "610910", origin: "CN", destination: "DE", rate: 12.0 },
+    { hsCode: "271019", origin: "AE", destination: "JP", rate: 0.0 },
+  ];
+  for (const t of tariffSeeds) {
+    await db.insert(tariffRatesCache).values({
+      hsCode: t.hsCode,
+      origin: t.origin,
+      destination: t.destination,
+      rate: t.rate,
+    }).onConflictDoNothing();
+  }
+
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/shipments");
   revalidatePath("/dashboard/risk");
+  revalidatePath("/dashboard/tariffs");
 
   return { count: generated.length, ids: generated };
 }

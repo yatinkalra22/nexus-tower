@@ -8,6 +8,7 @@ import { count, eq, ne, desc } from "drizzle-orm";
 import { Ship, AlertTriangle, CheckCircle, Leaf, ArrowRight } from "lucide-react";
 import { computeGwp } from "@/lib/analytics/gwp";
 import { GetStartedBanner } from "@/components/dashboard/get-started";
+import { seedScenario } from "@/server/seed-scenario";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -24,12 +25,18 @@ const statusDot = (s: string | null) => {
 export default async function DashboardPage() {
   const user = await requireUser();
 
+  // Auto-seed scenario data for first-time users so the dashboard isn't empty
+  const [totalCheck] = await db.select({ value: count() }).from(shipments);
+  if ((totalCheck?.value ?? 0) === 0) {
+    await seedScenario();
+  }
+
   let activeCount = 0;
   let openExceptionsCount = 0;
   let onTimePercent = "N/A";
   let co2eLabel = "0 kg";
   let dataUnavailable = false;
-  let recentShipments: Array<{ id: string; name: string; status: string | null; originPortId: string | null; destinationPortId: string | null }> = [];
+  let recentShipments: Array<{ id: string; name: string; status: string | null; originPortId: string | null; destinationPortId: string | null; originPort?: { name: string } | null; destinationPort?: { name: string } | null }> = [];
   let recentActions: Array<{ id: number; tool: string | null; outcome: string | null; timestamp: Date | null }> = [];
   let vesselMmsis: string[] = [];
 
@@ -68,6 +75,7 @@ export default async function DashboardPage() {
 
     recentShipments = await db.query.shipments.findMany({
       columns: { id: true, name: true, status: true, originPortId: true, destinationPortId: true },
+      with: { originPort: true, destinationPort: true },
       orderBy: [desc(shipments.createdAt)],
       limit: 5,
     });
@@ -183,7 +191,7 @@ export default async function DashboardPage() {
                     <div className="min-w-0">
                       <span className="text-sm font-medium truncate block">{s.name || s.id}</span>
                       <span className="text-[11px] font-mono text-muted-foreground/60">
-                        {s.originPortId || "—"} → {s.destinationPortId || "—"}
+                        {s.originPort?.name ?? s.originPortId ?? "—"} → {s.destinationPort?.name ?? s.destinationPortId ?? "—"}
                       </span>
                     </div>
                   </div>

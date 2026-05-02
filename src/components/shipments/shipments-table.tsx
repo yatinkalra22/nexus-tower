@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Trash2, Loader2, Plus } from "lucide-react";
+import { Trash2, Loader2, Plus, Search } from "lucide-react";
 import { CSVImportModal } from "@/components/shipments/csv-import-modal";
 import { deleteShipments } from "@/server/shipments";
 import { toast } from "sonner";
@@ -33,16 +34,39 @@ const STATUS_COLORS = new Map([
 
 const statusDot = (status: string) => STATUS_COLORS.get(status) ?? "bg-amber-400";
 
+const STATUSES = ["all", "in_transit", "delayed", "pending", "arrived", "cancelled"] as const;
+
 export function ShipmentsTable({ shipments }: { shipments: Shipment[] }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const router = useRouter();
 
+  const filtered = useMemo(() => {
+    let result = shipments;
+    if (statusFilter !== "all") {
+      result = result.filter((s) => s.status === statusFilter);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter((s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.id.toLowerCase().includes(q) ||
+        s.originPort?.name?.toLowerCase().includes(q) ||
+        s.originPortId?.toLowerCase().includes(q) ||
+        s.destinationPort?.name?.toLowerCase().includes(q) ||
+        s.destinationPortId?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [shipments, search, statusFilter]);
+
   const hasSelection = selected.size > 0;
-  const allSelected = shipments.length > 0 && selected.size === shipments.length;
+  const allSelected = filtered.length > 0 && selected.size === filtered.length;
 
   const toggleAll = () => {
-    setSelected(allSelected ? new Set() : new Set(shipments.map((s) => s.id)));
+    setSelected(allSelected ? new Set() : new Set(filtered.map((s) => s.id)));
   };
 
   const toggleOne = (id: string) => {
@@ -121,6 +145,34 @@ export function ShipmentsTable({ shipments }: { shipments: Shipment[] }) {
         )}
       </div>
 
+      {/* Search + Status Filter */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground/50" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search shipments..."
+            className="pl-8 h-8 text-sm bg-transparent border-border/50"
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          {STATUSES.map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`rounded-md px-2.5 py-1 text-[11px] font-medium capitalize transition-colors ${
+                statusFilter === s
+                  ? "bg-primary/10 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground border border-transparent"
+              }`}
+            >
+              {s === "all" ? "All" : s.replace("_", " ")}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="rounded-xl border border-border/50 bg-card">
         <div className="overflow-x-auto">
           <Table className="min-w-[650px]">
@@ -143,7 +195,7 @@ export function ShipmentsTable({ shipments }: { shipments: Shipment[] }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {shipments.map((s) => (
+              {filtered.map((s) => (
                 <TableRow
                   key={s.id}
                   className={`transition-colors ${selected.has(s.id) ? "bg-primary/5" : "hover:bg-white/[0.03]"}`}
