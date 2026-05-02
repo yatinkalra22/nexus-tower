@@ -8,13 +8,14 @@ import { getWeatherForPoint } from "@/server/enrich/weather";
 
 export const tools = {
   queryShipments: tool({
-    description: "List active shipments with their current status and IDs.",
+    description: "List active shipments with their current status and IDs. Set status to 'all' to include every shipment.",
     inputSchema: z.object({
-      status: z.enum(["pending", "in_transit", "arrived", "delayed", "cancelled"]).optional(),
+      status: z.enum(["all", "pending", "in_transit", "arrived", "delayed", "cancelled"]).default("all"),
     }),
     execute: async ({ status }) => {
+      const filterStatus = status === "all" ? undefined : status;
       const results = await db.query.shipments.findMany({
-        where: status ? eq(shipments.status, status) : ne(shipments.status, "arrived"),
+        where: filterStatus ? eq(shipments.status, filterStatus) : ne(shipments.status, "arrived"),
         limit: 10,
       });
       return results;
