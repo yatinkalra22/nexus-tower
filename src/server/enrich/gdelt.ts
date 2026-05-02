@@ -1,3 +1,9 @@
+interface GdeltArticle {
+  title: string;
+  url: string;
+  source: string;
+}
+
 export async function getGdeltEvents(lat: number, lon: number, radiusKm = 200) {
   // GDELT 2.0 DOC API
   // We search for "disruption" or "port" or "strike" near coordinates
@@ -11,7 +17,7 @@ export async function getGdeltEvents(lat: number, lon: number, radiusKm = 200) {
     
     // In a real app, we'd filter results by proximity using GDELT's location fields.
     // For the hackathon, we return the top 3 relevant global events to show signal.
-    return (data.articles || []).slice(0, 3).map((a: any) => ({
+    return (data.articles || []).slice(0, 3).map((a: GdeltArticle) => ({
       title: a.title,
       url: a.url,
       source: a.source,

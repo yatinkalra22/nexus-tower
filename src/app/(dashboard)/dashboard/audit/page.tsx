@@ -3,7 +3,7 @@ import { eventsAudit } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { FileText, User, ShieldCheck } from "lucide-react";
+import { User, ShieldCheck } from "lucide-react";
 
 export default async function AuditPage() {
   const logs = await db.query.eventsAudit.findMany({

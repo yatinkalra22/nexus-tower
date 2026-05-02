@@ -7,6 +7,12 @@ import { NextRequest } from "next/server";
 // The SDK's McpServer usually expects a transport. 
 // For a Next.js route, we adapt the tool registry to a JSON-RPC handler.
 
+interface McpTool {
+  description: string;
+  parameters: any;
+  execute: (args: any) => Promise<any>;
+}
+
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -26,15 +32,15 @@ export async function POST(req: NextRequest) {
     if (method === "list_tools") {
       const toolList = Object.entries(tools).map(([name, t]) => ({
         name,
-        description: t.description,
-        inputSchema: (t as any).parameters, // zod schema
+        description: (t as unknown as McpTool).description,
+        inputSchema: (t as unknown as McpTool).parameters, // zod schema
       }));
       return Response.json({ tools: toolList });
     }
 
     if (method === "call_tool") {
       const { name, arguments: args } = params;
-      const tool = (tools as any)[name];
+      const tool = (tools as Record<string, McpTool>)[name];
       if (!tool) return Response.json({ error: "Tool not found" }, { status: 404 });
 
       const result = await tool.execute(args);

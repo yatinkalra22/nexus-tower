@@ -44,7 +44,7 @@ export function TariffSimulator() {
           Landed Cost & Tariff Simulator
         </CardTitle>
         <CardDescription>
-          Simulate duty impact using real World Bank WITS data or run "what-if" scenarios.
+          Simulate duty impact using real World Bank WITS data or run &quot;what-if&quot; scenarios.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6 md:grid-cols-2">
@@ -84,7 +84,7 @@ export function TariffSimulator() {
             <div className="flex flex-col gap-2 mt-4 p-4 bg-muted/50 rounded-lg border border-dashed border-orange-500/30">
               <Label className="text-orange-500 font-semibold flex items-center gap-2">
                 <RefreshCw className="size-4" />
-                "What-if" Scenario
+                &quot;What-if&quot; Scenario
               </Label>
               <p className="text-xs text-muted-foreground mb-2">
                 Simulate geopolitical shifts (e.g. new trade war). Override the fetched {rate}% rate:

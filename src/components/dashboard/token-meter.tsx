@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Coins, Loader2 } from "lucide-react";
 
@@ -8,7 +8,7 @@ export function TokenMeter() {
   const [usage, setUsage] = useState<{ used: number; budget: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUsage = async () => {
+  const fetchUsage = useCallback(async () => {
     try {
       const res = await fetch("/api/usage");
       const data = await res.json();
@@ -18,13 +18,13 @@ export function TokenMeter() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsage();
     const interval = setInterval(fetchUsage, 30000); // Poll every 30s
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchUsage]);
 
   if (loading && !usage) return <Loader2 className="size-4 animate-spin text-muted-foreground" />;
   if (!usage) return null;

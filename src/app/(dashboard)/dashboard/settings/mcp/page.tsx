@@ -1,34 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Trash2, Copy, Key, Terminal } from "lucide-react";
+import { Trash2, Key, Terminal } from "lucide-react";
 import { toast } from "sonner";
 import { createMcpToken, getMcpTokens, revokeMcpToken } from "@/server/mcp/tokens";
 
+interface McpToken {
+  token: string;
+  userId: string;
+  name: string;
+  createdAt: Date | null;
+}
+
 export default function McpSettingsPage() {
-  const [tokens, setTokens] = useState<any[]>([]);
+  const [tokens, setTokens] = useState<McpToken[]>([]);
   const [newTokenName, setNewTokenName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const fetchTokens = async () => {
+  const fetchTokens = useCallback(async () => {
     const data = await getMcpTokens();
-    setTokens(data);
-  };
+    setTokens(data as McpToken[]);
+  }, []);
 
   useEffect(() => {
     fetchTokens();
-  }, []);
+  }, [fetchTokens]);
 
   const handleCreate = async () => {
     if (!newTokenName) return;
     setLoading(true);
     try {
-      const token = await createMcpToken(newTokenName);
+      await createMcpToken(newTokenName);
       toast.success("Token created. Copy it now, it won't be shown again.");
       setNewTokenName("");
       fetchTokens();
@@ -43,11 +49,6 @@ export default function McpSettingsPage() {
     await revokeMcpToken(token);
     toast.info("Token revoked");
     fetchTokens();
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
   };
 
   return (
@@ -101,7 +102,7 @@ export default function McpSettingsPage() {
                 <TableRow key={t.token}>
                   <TableCell className="font-medium">{t.name}</TableCell>
                   <TableCell className="font-mono text-xs">{t.token.slice(0, 10)}...</TableCell>
-                  <TableCell className="text-xs">{t.createdAt.toLocaleString()}</TableCell>
+                  <TableCell className="text-xs">{t.createdAt?.toLocaleString()}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => handleRevoke(t.token)}>
                       <Trash2 className="size-4 text-destructive" />

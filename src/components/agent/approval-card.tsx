@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 interface ApprovalCardProps {
   action: string;
-  payload: any;
+  payload: Record<string, any>;
   onExecuted?: (outcome: string) => void;
 }
 

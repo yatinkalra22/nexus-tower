@@ -21,8 +21,6 @@ const client = createClient({
   authToken: TURSO_AUTH_TOKEN,
 });
 
-const db = drizzle(client);
-
 // AIS Stream WebSocket URL
 const AIS_WS_URL = "wss://stream.aisstream.io/v0/stream";
 

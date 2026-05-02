@@ -15,6 +15,17 @@ const rowSchema = z.object({
   eta: z.string().optional().transform(v => v ? new Date(v) : undefined),
 });
 
+interface ShipmentRow {
+  id: string;
+  name: string;
+  status: "pending" | "in_transit" | "arrived" | "delayed" | "cancelled";
+  originPortId?: string;
+  destinationPortId?: string;
+  carrierId?: string;
+  vesselMmsi?: string;
+  eta?: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -25,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     const text = await file.text();
-    const { data, errors } = Papa.parse(text, {
+    const { data, errors } = Papa.parse<ShipmentRow>(text, {
       header: true,
       skipEmptyLines: true,
     });
@@ -36,11 +47,11 @@ export async function POST(req: NextRequest) {
 
     const results = {
       ok: 0,
-      errors: [] as any[],
+      errors: [] as { row: number; error: string }[],
       inserted: [] as string[],
     };
 
-    for (const [index, row] of (data as any[]).entries()) {
+    for (const [index, row] of data.entries()) {
       try {
         const validated = rowSchema.parse(row);
         await db.insert(shipments).values(validated).onConflictDoUpdate({

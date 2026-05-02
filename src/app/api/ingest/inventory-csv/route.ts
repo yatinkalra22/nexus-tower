@@ -15,6 +15,16 @@ const rowSchema = z.object({
   unit: z.string().optional().default("pcs"),
 });
 
+interface InventoryRow {
+  sku: string;
+  name: string;
+  onHand: string;
+  leadTimeDays: string;
+  demandMean: string;
+  demandSigma: string;
+  unit?: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -25,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     const text = await file.text();
-    const { data, errors } = Papa.parse(text, {
+    const { data, errors } = Papa.parse<InventoryRow>(text, {
       header: true,
       skipEmptyLines: true,
     });
@@ -36,11 +46,11 @@ export async function POST(req: NextRequest) {
 
     const results = {
       ok: 0,
-      errors: [] as any[],
+      errors: [] as { row: number; error: string }[],
       inserted: [] as string[],
     };
 
-    for (const [index, row] of (data as any[]).entries()) {
+    for (const [index, row] of data.entries()) {
       try {
         const validated = rowSchema.parse(row);
         

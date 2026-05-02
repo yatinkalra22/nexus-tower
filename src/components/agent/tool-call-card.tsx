@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface ToolCallCardProps {
   toolName: string;
-  args: any;
+  args: Record<string, any>;
   result?: any;
   status: "pending" | "running" | "done" | "error";
 }
