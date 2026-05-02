@@ -1,8 +1,17 @@
 # NexusTower
 
-NexusTower is an agentic logistics control tower for the Synapse Innovation Hack 2026. It combines live AIS vessel tracking, weather enrichment, geopolitical events, tariff data, inventory checks, and a Bedrock-powered agent loop with human approval and auditability.
+**Agentic logistics control tower for the Synapse Innovation Hack 2026.**
 
-## Overview
+NexusTower combines live AIS vessel tracking, weather enrichment, geopolitical events, tariff data, inventory checks, and a Bedrock-powered agent loop with human approval and auditability.
+
+## What It Does
+
+1. Detects live supply-chain disruption from AIS, weather, and geopolitics.
+2. Lets the agent propose a fix instead of auto-executing it.
+3. Keeps the operator in control through approval steps and audit logs.
+4. Exposes the same tool registry through the web app and MCP.
+
+## Features
 
 - Live dashboard, map, agent UI, audit log, sustainability, tariffs, and inventory pages.
 - Turso + Drizzle persistence.
@@ -10,6 +19,34 @@ NexusTower is an agentic logistics control tower for the Synapse Innovation Hack
 - Bedrock tool-loop API.
 - MCP server and token management UI.
 - Vercel cron support and an AIS ingestor Lambda adapter.
+
+## Tech Stack
+
+| Layer        | Technology                                                             |
+| ------------ | ---------------------------------------------------------------------- |
+| Frontend     | Next.js 16 App Router, React 19, Tailwind CSS v4, shadcn/ui primitives |
+| AI           | Vercel AI SDK, Amazon Bedrock                                          |
+| Database     | Turso (libSQL), Drizzle ORM                                            |
+| Auth         | Clerk                                                                  |
+| Realtime     | Server-Sent Events, aisstream.io                                       |
+| Maps         | MapLibre GL JS                                                         |
+| Integrations | Open-Meteo, OSRM, GDELT, WITS                                          |
+
+## Repo Structure
+
+```text
+nexus-tower/
+	apps/
+		ingestor/        # AIS WebSocket worker and Lambda adapter
+	docs/              # Plan, demo script, Devpost draft
+	public/            # Static assets
+	src/
+		app/             # Next.js routes, layouts, and API routes
+		components/      # UI and dashboard components
+		db/              # Drizzle schema and client
+		lib/             # Auth, env, agent, analytics helpers
+		server/          # Enrichment, tariffs, inventory, MCP logic
+```
 
 ## Prerequisites
 
@@ -20,19 +57,34 @@ NexusTower is an agentic logistics control tower for the Synapse Innovation Hack
 - AWS Bedrock access in the selected region
 - An aisstream.io API key
 
-## Install
+## Quick Start
 
 ```bash
 npm install
-```
-
-## Local Development
-
-```bash
+npm run db:push
 npm run dev
 ```
 
 Open the app at `http://localhost:3000`.
+
+## Configuration
+
+Use the values in [`.env.local.example`](.env.local.example) as the template for local development and deployment.
+
+| Variable                            | Source                                         |
+| ----------------------------------- | ---------------------------------------------- |
+| `TURSO_DATABASE_URL`                | Turso dashboard or `turso db show nexus-tower` |
+| `TURSO_AUTH_TOKEN`                  | `turso db tokens create nexus-tower`           |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard                                |
+| `CLERK_SECRET_KEY`                  | Clerk dashboard                                |
+| `AWS_REGION`                        | AWS console                                    |
+| `AWS_ACCESS_KEY_ID`                 | AWS IAM credentials with Bedrock access        |
+| `AWS_SECRET_ACCESS_KEY`             | AWS IAM credentials with Bedrock access        |
+| `BEDROCK_MODEL_ID`                  | Bedrock model access settings                  |
+| `AISSTREAM_API_KEY`                 | aisstream.io account dashboard                 |
+| `OPENROUTESERVICE_API_KEY`          | OpenRouteService account                       |
+| `WITS_USER_NAME`                    | World Bank WITS account, if used               |
+| `CRON_SECRET`                       | Any secure random value you choose             |
 
 ## Available Scripts
 
@@ -44,26 +96,7 @@ Open the app at `http://localhost:3000`.
 - `npm run db:push` - push the schema to Turso.
 - `npm run ingestor:dev` - run the AIS ingestor locally with `tsx`.
 
-## Environment Variables
-
-Set these in your local shell, your deployment platform, or your secret manager.
-
-| Variable                            | Required | Source                                         | Used for                       |
-| ----------------------------------- | -------- | ---------------------------------------------- | ------------------------------ |
-| `TURSO_DATABASE_URL`                | Yes      | Turso dashboard or `turso db show nexus-tower` | Database connection string     |
-| `TURSO_AUTH_TOKEN`                  | Yes      | `turso db tokens create nexus-tower`           | Database auth token            |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes      | Clerk dashboard                                | Client auth integration        |
-| `CLERK_SECRET_KEY`                  | Yes      | Clerk dashboard                                | Server auth integration        |
-| `AWS_REGION`                        | Yes      | AWS console                                    | Bedrock runtime region         |
-| `AWS_ACCESS_KEY_ID`                 | Yes      | AWS IAM user or role credentials               | Bedrock API access             |
-| `AWS_SECRET_ACCESS_KEY`             | Yes      | AWS IAM user or role credentials               | Bedrock API access             |
-| `BEDROCK_MODEL_ID`                  | Yes      | AWS Bedrock model access settings              | Claude model selection         |
-| `AISSTREAM_API_KEY`                 | Yes      | aisstream.io account dashboard                 | Live AIS WebSocket access      |
-| `OPENROUTESERVICE_API_KEY`          | No       | OpenRouteService account                       | Optional routing support       |
-| `WITS_USER_NAME`                    | No       | World Bank WITS account, if used               | Optional tariff lookups        |
-| `CRON_SECRET`                       | Yes      | Any secure random value you choose             | Protects cron enrichment calls |
-
-## Setup Notes
+## Local Setup
 
 1. Create the Turso database and apply the schema with `npm run db:push`.
 2. Create a Clerk app and copy the publishable and secret keys.
@@ -79,16 +112,17 @@ Set these in your local shell, your deployment platform, or your secret manager.
 4. Deploy the web app.
 5. Run the AIS ingestor as a separate long-lived process locally, or package `apps/ingestor/lambda.ts` for a scheduled Lambda window.
 
+## Documentation
+
+- [Architecture](docs/PLAN.md)
+- [Demo Script](docs/DEMO-SCRIPT.md)
+- [Devpost Draft](docs/DEVPOST.md)
+
 ## Demo Assets
 
 - [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md)
 - [docs/DEVPOST.md](docs/DEVPOST.md)
 
-## Tech Stack
+## License
 
-- Next.js 16 App Router
-- React 19
-- Tailwind CSS v4 + shadcn/ui primitives
-- Vercel AI SDK + Amazon Bedrock
-- Turso (libSQL) + Drizzle ORM
-- Clerk
+MIT
