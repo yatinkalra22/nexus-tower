@@ -7,6 +7,7 @@ import { shipments, exceptions, eventsAudit } from "@/db/schema";
 import { count, eq, ne, desc } from "drizzle-orm";
 import { Ship, AlertTriangle, CheckCircle, Leaf, ArrowRight } from "lucide-react";
 import { computeGwp } from "@/lib/analytics/gwp";
+import { GetStartedBanner } from "@/components/dashboard/get-started";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -103,39 +104,9 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Get Started Banner — shown when no shipments exist */}
+      {/* Get Started Banner — dismissible, stored in localStorage */}
       {activeCount === 0 && recentShipments.length === 0 && !dataUnavailable && (
-        <div className="rounded-xl border border-border/50 bg-card p-5">
-          <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Get Started</span>
-          <div className="mt-4 flex flex-col gap-4">
-            <div className="flex items-start gap-4">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-xs font-mono text-primary">1</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">Import Shipments</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Upload a CSV or create manually</p>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <Link href="/docs/samples/shipments.example.csv" className="rounded-lg border border-border/50 bg-white/[0.03] px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">Import CSV</Link>
-                <Link href="/dashboard/shipments/new" className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors">+ New Shipment</Link>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-xs font-mono text-primary">2</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">Track Live Vessels</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Attach real MMSI numbers to shipments for AIS tracking</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-xs font-mono text-primary">3</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">Ask the Agent</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Use AI to detect disruptions and propose fixes</p>
-              </div>
-              <Link href="/dashboard/agent" className="shrink-0 rounded-lg border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors">Open Agent</Link>
-            </div>
-          </div>
-        </div>
+        <GetStartedBanner />
       )}
 
       {/* KPI Strip */}
