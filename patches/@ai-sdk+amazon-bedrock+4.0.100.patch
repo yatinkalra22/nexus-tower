@@ -11,3 +11,16 @@ index 56d2395..5780b73 100644
  });
  var BedrockReasoningTextSchema = import_v44.z.object({
    signature: import_v44.z.string().nullish(),
+diff --git a/node_modules/@ai-sdk/amazon-bedrock/dist/index.mjs b/node_modules/@ai-sdk/amazon-bedrock/dist/index.mjs
+index 39be707..47841b9 100644
+--- a/node_modules/@ai-sdk/amazon-bedrock/dist/index.mjs
++++ b/node_modules/@ai-sdk/amazon-bedrock/dist/index.mjs
+@@ -1504,7 +1504,7 @@ var BedrockAdditionalModelResponseFieldsSchema = z4.object({
+ var BedrockToolUseSchema = z4.object({
+   toolUseId: z4.string(),
+   name: z4.string(),
+-  input: z4.unknown()
++  input: z4.unknown().nullish()
+ });
+ var BedrockReasoningTextSchema = z4.object({
+   signature: z4.string().nullish(),
