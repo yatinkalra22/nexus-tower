@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ai-sdk/amazon-bedrock/dist/index.js b/node_modules/@ai-sdk/amazon-bedrock/dist/index.js
+index 56d2395..5780b73 100644
+--- a/node_modules/@ai-sdk/amazon-bedrock/dist/index.js
++++ b/node_modules/@ai-sdk/amazon-bedrock/dist/index.js
+@@ -1504,7 +1504,7 @@ var BedrockAdditionalModelResponseFieldsSchema = import_v44.z.object({
+ var BedrockToolUseSchema = import_v44.z.object({
+   toolUseId: import_v44.z.string(),
+   name: import_v44.z.string(),
+-  input: import_v44.z.unknown()
++  input: import_v44.z.unknown().nullish()
+ });
+ var BedrockReasoningTextSchema = import_v44.z.object({
+   signature: import_v44.z.string().nullish(),

@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "ingestor:dev": "tsx apps/ingestor/index.ts"
+    "ingestor:dev": "tsx apps/ingestor/index.ts",
+    "postinstall": "npx patch-package"
   },
   "dependencies": {
     "@ai-sdk/amazon-bedrock": "^4.0.100",
