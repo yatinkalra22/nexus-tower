@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trash2, Key, Terminal } from "lucide-react";
 import { toast } from "sonner";
@@ -52,25 +52,25 @@ export default function McpSettingsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-4xl mx-auto">
+    <div className="flex flex-col gap-8 max-w-4xl mx-auto animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Key className="size-8 text-primary" />
-          MCP Access Control
-        </h1>
-        <p className="text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <Key className="size-5 text-sky-400" />
+          <h1 className="text-2xl font-semibold tracking-tight">MCP Access Control</h1>
+        </div>
+        <p className="text-sm text-muted-foreground mt-0.5">
           Expose NexusTower tools to external agents like Claude Desktop or IDE clients.
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create New Token</CardTitle>
-          <CardDescription>Give your token a descriptive name to track its usage.</CardDescription>
+      <Card className="rounded-xl border border-border/50 bg-card">
+        <CardHeader className="px-4 pt-4 pb-2">
+          <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Create New Token</p>
+          <CardDescription className="text-xs">Give your token a descriptive name to track its usage.</CardDescription>
         </CardHeader>
-        <CardContent className="flex gap-4">
-          <Input 
-            placeholder="e.g. Claude Desktop" 
+        <CardContent className="flex gap-4 px-4 pb-4">
+          <Input
+            placeholder="e.g. Claude Desktop"
             value={newTokenName}
             onChange={(e) => setNewTokenName(e.target.value)}
           />
@@ -80,14 +80,14 @@ export default function McpSettingsPage() {
         </CardContent>
       </Card>
 
-      <div className="rounded-md border">
+      <div className="rounded-xl border border-border/50 bg-card">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Token (Prefix)</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Name</TableHead>
+              <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Token (Prefix)</TableHead>
+              <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Created</TableHead>
+              <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -99,10 +99,10 @@ export default function McpSettingsPage() {
               </TableRow>
             ) : (
               tokens.map((t) => (
-                <TableRow key={t.token}>
+                <TableRow key={t.token} className="hover:bg-white/[0.03] transition-colors">
                   <TableCell className="font-medium">{t.name}</TableCell>
-                  <TableCell className="font-mono text-xs">{t.token.slice(0, 10)}...</TableCell>
-                  <TableCell className="text-xs">{t.createdAt?.toLocaleString()}</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{t.token.slice(0, 10)}...</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{t.createdAt?.toLocaleString()}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => handleRevoke(t.token)}>
                       <Trash2 className="size-4 text-destructive" />
@@ -115,15 +115,15 @@ export default function McpSettingsPage() {
         </Table>
       </div>
 
-      <Card className="bg-muted/30 border-dashed">
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Terminal className="size-4" />
-            Claude Desktop Configuration
-          </CardTitle>
+      <Card className="rounded-xl border border-dashed border-border/50 bg-card">
+        <CardHeader className="px-4 pt-4 pb-2">
+          <div className="flex items-center gap-2">
+            <Terminal className="size-4 text-muted-foreground" />
+            <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Claude Desktop Configuration</p>
+          </div>
         </CardHeader>
-        <CardContent>
-          <pre className="p-4 rounded-lg bg-background border text-[10px] overflow-x-auto">
+        <CardContent className="px-4 pb-4">
+          <pre className="p-4 rounded-lg bg-background border border-border/50 text-[10px] font-mono overflow-x-auto">
 {`{
   "mcpServers": {
     "nexus-tower": {
@@ -139,7 +139,7 @@ export default function McpSettingsPage() {
   }
 }`}
           </pre>
-          <p className="mt-4 text-xs text-muted-foreground italic">
+          <p className="mt-4 text-xs text-muted-foreground">
             Note: For production, we recommend using the MCP HTTP proxy or a dedicated MCP bridge.
           </p>
         </CardContent>

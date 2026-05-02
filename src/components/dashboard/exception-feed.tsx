@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Clock, MapPin } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface Exception {
   id: string;
@@ -15,6 +15,20 @@ interface Exception {
   description: string;
   createdAt: string;
 }
+
+const severityBorder: Record<string, string> = {
+  critical: "border-l-red-400",
+  high: "border-l-amber-400",
+  medium: "border-l-yellow-400",
+  low: "border-l-sky-400",
+};
+
+const severityDot: Record<string, string> = {
+  critical: "bg-red-400",
+  high: "bg-amber-400",
+  medium: "bg-yellow-400",
+  low: "bg-sky-400",
+};
 
 export function ExceptionFeed() {
   const [exceptions, setExceptions] = useState<Exception[]>([]);
@@ -30,53 +44,53 @@ export function ExceptionFeed() {
     return () => eventSource.close();
   }, []);
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "critical": return "bg-red-500/10 text-red-500 border-red-500/20";
-      case "high": return "bg-orange-500/10 text-orange-500 border-orange-500/20";
-      case "medium": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
-      default: return "bg-blue-500/10 text-blue-500 border-blue-500/20";
-    }
-  };
-
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-3 h-full">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold flex items-center gap-2">
-          <AlertCircle className="size-4 text-orange-500" />
-          Live Exception Feed
+        <h3 className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">
+          Exception Feed
         </h3>
-        <Badge variant="outline">{exceptions.length} Active</Badge>
+        <span className="font-mono text-[11px] text-muted-foreground">
+          {exceptions.length} active
+        </span>
       </div>
 
-      <ScrollArea className="flex-1 h-[400px] pr-4">
-        <div className="flex flex-col gap-3">
+      <ScrollArea className="flex-1 h-[400px]">
+        <div className="flex flex-col gap-1.5">
           {exceptions.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground text-sm border rounded-lg border-dashed">
-              No active exceptions.
+            <div className="text-center py-12 text-muted-foreground/60 text-sm">
+              No active exceptions
             </div>
           ) : (
-            exceptions.map((ex) => (
-              <Link 
-                key={ex.id} 
+            exceptions.map((ex, i) => (
+              <Link
+                key={ex.id}
                 href={`/dashboard/shipments/${ex.shipmentId}`}
-                className="group flex flex-col gap-2 p-3 rounded-lg border bg-card hover:bg-accent transition-colors"
+                className={cn(
+                  "group flex flex-col gap-1.5 border-l-2 rounded-r-lg py-2.5 px-3 transition-all duration-150 hover:bg-white/[0.03]",
+                  severityBorder[ex.severity] || "border-l-sky-400",
+                  "animate-slide-in"
+                )}
+                style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <Badge variant="outline" className={getSeverityColor(ex.severity)}>
-                    {ex.severity}
-                  </Badge>
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <Clock className="size-3" />
-                    {formatDistanceToNow(new Date(ex.createdAt))} ago
+                  <div className="flex items-center gap-2">
+                    <div className={cn("size-1.5 rounded-full", severityDot[ex.severity])} />
+                    <span className="text-[10px] font-medium tracking-wider uppercase text-muted-foreground">
+                      {ex.severity}
+                    </span>
+                  </div>
+                  <span className="font-mono text-[10px] text-muted-foreground/60 flex items-center gap-1">
+                    <Clock className="size-2.5" />
+                    {formatDistanceToNow(new Date(ex.createdAt))}
                   </span>
                 </div>
-                <p className="text-sm font-medium leading-tight group-hover:underline">
+                <p className="text-sm leading-tight group-hover:text-foreground transition-colors">
                   {ex.description}
                 </p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="size-3" />
-                  <span>Shipment: {ex.shipmentId}</span>
+                <div className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground/60">
+                  <MapPin className="size-2.5" />
+                  {ex.shipmentId}
                 </div>
               </Link>
             ))

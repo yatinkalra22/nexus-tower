@@ -54,74 +54,74 @@ export default async function SustainabilityPage() {
     : EMISSION_FACTORS.sea_container.toFixed(4);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Leaf className="size-8 text-green-500" />
-          Sustainability Pulse
-        </h1>
-        <p className="text-muted-foreground">
-          Real-time CO₂e monitoring aligned with Jan-2026 EU GWP mandates.
+        <div className="flex items-center gap-2">
+          <Leaf className="size-5 text-emerald-400" />
+          <h1 className="text-2xl font-semibold tracking-tight">Sustainability Pulse</h1>
+        </div>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Real-time CO2e monitoring aligned with Jan-2026 EU GWP mandates.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-green-500/5 border-green-500/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-green-600">
+        <Card className="rounded-xl border border-emerald-500/20 bg-card p-4">
+          <CardHeader className="p-0 pb-2">
+            <p className="text-[11px] font-medium tracking-widest uppercase text-emerald-400">
               Total Footprint (MTD)
-            </CardTitle>
+            </p>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-700">
-              {Math.round(totalGwp).toLocaleString()} kg CO₂e
+          <CardContent className="p-0">
+            <div className="text-2xl font-semibold tracking-tight font-mono text-emerald-400">
+              {Math.round(totalGwp).toLocaleString()} <span className="text-sm font-normal text-muted-foreground">kg CO2e</span>
             </div>
-            <p className="text-xs text-green-600/70 mt-1">{allShipments.length} shipments tracked</p>
+            <p className="text-xs text-muted-foreground mt-1"><span className="font-mono">{allShipments.length}</span> shipments tracked</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Intensity</CardTitle>
+        <Card className="rounded-xl border border-border/50 bg-card p-4">
+          <CardHeader className="p-0 pb-2">
+            <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Avg Intensity</p>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{avgIntensity} kg/tkm</div>
+          <CardContent className="p-0">
+            <div className="text-2xl font-semibold tracking-tight font-mono">{avgIntensity} <span className="text-sm font-normal text-muted-foreground">kg/tkm</span></div>
             <p className="text-xs text-muted-foreground mt-1">GLEC v3 WTW Factor</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Compliance Status</CardTitle>
+        <Card className="rounded-xl border border-border/50 bg-card p-4">
+          <CardHeader className="p-0 pb-2">
+            <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Compliance Status</p>
           </CardHeader>
-          <CardContent>
-            <Badge className="bg-green-500 hover:bg-green-600">EU DPP READY</Badge>
+          <CardContent className="p-0">
+            <Badge variant="outline" className="text-emerald-400 bg-emerald-400/10 border-transparent">EU DPP READY</Badge>
             <p className="text-xs text-muted-foreground mt-1">Digital Product Passport</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Shipment GWP Breakdown</CardTitle>
-          <CardDescription>Verified emissions per active shipment.</CardDescription>
+      <Card className="rounded-xl border border-border/50 bg-card">
+        <CardHeader className="px-4 pt-4 pb-2">
+          <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Shipment GWP Breakdown</p>
+          <CardDescription className="text-xs">Verified emissions per active shipment.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 pb-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Shipment</TableHead>
-                <TableHead>Mode</TableHead>
-                <TableHead>Distance</TableHead>
-                <TableHead>Methodology</TableHead>
-                <TableHead className="text-right">Est. CO₂e</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Shipment</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Mode</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Distance</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Methodology</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground text-right">Est. CO2e</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {shipmentGwps.map(({ shipment: s, gwp, mode, distKm }) => (
-                <TableRow key={s.id}>
-                  <TableCell className="font-medium">{s.id}</TableCell>
+                <TableRow key={s.id} className="hover:bg-white/[0.03] transition-colors">
+                  <TableCell className="font-mono font-medium text-sky-400">{s.id}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{mode === 'sea_container' ? 'Sea' : 'Road'}</Badge>
+                    <Badge variant="outline" className="text-xs">{mode === 'sea_container' ? 'Sea' : 'Road'}</Badge>
                   </TableCell>
                   <TableCell className="font-mono text-xs">
                     {Math.round(distKm).toLocaleString()} km
@@ -147,10 +147,10 @@ export default async function SustainabilityPage() {
         </CardContent>
       </Card>
 
-      <div className="rounded-xl border border-dashed p-12 flex flex-col items-center justify-center text-center gap-4 bg-muted/20">
-        <Info className="size-12 text-muted-foreground opacity-50" />
+      <div className="rounded-xl border border-dashed border-border/50 p-12 flex flex-col items-center justify-center text-center gap-4 bg-card">
+        <Info className="size-10 text-muted-foreground opacity-40" />
         <div className="max-w-md">
-          <h3 className="font-semibold">Jan-2026 EU Reporting Mandate</h3>
+          <h3 className="font-semibold text-sm">Jan-2026 EU Reporting Mandate</h3>
           <p className="text-sm text-muted-foreground mt-2">
             NexusTower automatically generates the required GWP declaration for every shipment,
             allowing instant compliance with new EU Digital Product Passport regulations.

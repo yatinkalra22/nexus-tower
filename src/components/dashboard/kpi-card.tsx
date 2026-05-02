@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface KPICardProps {
@@ -12,28 +11,34 @@ interface KPICardProps {
     isPositive: boolean;
   };
   className?: string;
+  accentColor?: string;
 }
 
-export function KPICard({ title, value, description, icon: Icon, trend, className }: KPICardProps) {
+export function KPICard({ title, value, description, icon: Icon, trend, className, accentColor }: KPICardProps) {
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="size-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {(description || trend) && (
-          <p className="mt-1 text-xs text-muted-foreground">
-            {trend && (
-              <span className={cn("mr-1 font-medium", trend.isPositive ? "text-green-500" : "text-red-500")}>
-                {trend.isPositive ? "+" : ""}{trend.value}%
-              </span>
-            )}
-            {description || trend?.label}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+    <div className={cn(
+      "group relative overflow-hidden rounded-xl border border-border/50 bg-card p-4 transition-all duration-200 hover:border-border",
+      className
+    )}>
+      <div className={cn(
+        "absolute inset-x-0 top-0 h-px",
+        accentColor || "bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+      )} />
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">{title}</span>
+        <Icon className="size-3.5 text-muted-foreground/60" />
+      </div>
+      <div className="mt-2 font-mono text-2xl font-bold tracking-tight">{value}</div>
+      {(description || trend) && (
+        <p className="mt-1 text-[11px] text-muted-foreground">
+          {trend && (
+            <span className={cn("mr-1 font-mono font-medium", trend.isPositive ? "text-emerald-400" : "text-red-400")}>
+              {trend.isPositive ? "+" : ""}{trend.value}%
+            </span>
+          )}
+          {description || trend?.label}
+        </p>
+      )}
+    </div>
   );
 }

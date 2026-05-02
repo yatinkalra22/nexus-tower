@@ -25,7 +25,6 @@ export default async function DashboardPage() {
     activeCount = activeResult?.value ?? 0;
     openExceptionsCount = exceptionResult?.value ?? 0;
 
-    // On-Time % from real data
     const [totalResult] = await db.select({ value: count() }).from(shipments);
     const [delayedResult] = await db.select({ value: count() }).from(shipments).where(eq(shipments.status, "delayed"));
     const total = totalResult?.value ?? 0;
@@ -34,7 +33,6 @@ export default async function DashboardPage() {
       onTimePercent = `${((total - delayed) / total * 100).toFixed(1)}%`;
     }
 
-    // CO2e from active shipments with waypoint-estimated distance
     const activeShipments = await db.query.shipments.findMany({
       where: ne(shipments.status, "arrived"),
       with: { waypoints: true },
@@ -57,57 +55,63 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-bold">Global Command Center</h1>
-        <p className="text-muted-foreground">
-          Operator: {user.firstName || user.username || "Operator"} | System optimal.
+        <h1 className="text-2xl font-semibold tracking-tight">Command Center</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          {user.firstName || user.username || "Operator"} &middot; All systems nominal
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <KPICard
-          title="Active Shipments"
-          value={activeCount}
-          icon={Ship}
-          description="Live in transit"
-        />
-        <KPICard
-          title="Open Exceptions"
-          value={openExceptionsCount}
-          icon={AlertTriangle}
-          className={openExceptionsCount > 0 ? "border-orange-500/50" : ""}
-          description="Requiring attention"
-        />
-        <KPICard
-          title="On-Time %"
-          value={onTimePercent}
-          icon={CheckCircle}
-          description="Based on shipment statuses"
-        />
-        <KPICard
-          title="CO₂e Active"
-          value={co2eLabel}
-          icon={Leaf}
-          description="GLEC WTW factor"
-        />
-      </div>
-
       {dataUnavailable && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-600">
-          Live dashboard data is temporarily unavailable. The operator shell is still available while the data layer recovers.
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-400">
+          Live data temporarily unavailable. Shell is operational.
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <div className="md:col-span-1 lg:col-span-1 border rounded-xl p-6 bg-card shadow-sm">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <KPICard
+          title="Active"
+          value={activeCount}
+          icon={Ship}
+          description="In transit"
+          accentColor="bg-gradient-to-r from-transparent via-sky-400/40 to-transparent"
+        />
+        <KPICard
+          title="Exceptions"
+          value={openExceptionsCount}
+          icon={AlertTriangle}
+          className={openExceptionsCount > 0 ? "border-amber-500/20" : ""}
+          description="Requiring attention"
+          accentColor="bg-gradient-to-r from-transparent via-amber-400/40 to-transparent"
+        />
+        <KPICard
+          title="On-Time"
+          value={onTimePercent}
+          icon={CheckCircle}
+          description="Delivery rate"
+          accentColor="bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent"
+        />
+        <KPICard
+          title="CO2e"
+          value={co2eLabel}
+          icon={Leaf}
+          description="GLEC WTW estimate"
+          accentColor="bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent"
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-5">
+        <div className="lg:col-span-2 rounded-xl border border-border/50 bg-card p-4">
           <ExceptionFeed />
         </div>
 
-        <div className="md:col-span-1 lg:col-span-2 border rounded-xl p-6 bg-card shadow-sm flex flex-col gap-4">
-          <h3 className="font-semibold">Strategic Insights</h3>
-          <div className="flex-1 flex items-center justify-center border border-dashed rounded-lg text-muted-foreground text-sm">
-            Predictive analytics will populate here as AIS data accumulates.
+        <div className="lg:col-span-3 rounded-xl border border-border/50 bg-card p-4 flex flex-col gap-4">
+          <h3 className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">
+            Strategic Insights
+          </h3>
+          <div className="flex-1 flex items-center justify-center rounded-lg border border-dashed border-border/50 text-muted-foreground/40 text-sm min-h-[300px]">
+            Analytics populate as AIS data accumulates
           </div>
         </div>
       </div>

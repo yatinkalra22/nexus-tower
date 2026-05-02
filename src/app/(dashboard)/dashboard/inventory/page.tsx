@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { inventoryItems } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { Package, AlertOctagon } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ImportInventoryCSVButton } from "./import-button";
@@ -14,19 +14,19 @@ export default async function InventoryPage() {
     orderBy: [desc(inventoryItems.sku)],
   });
 
-  const criticalItems = items.filter(item => 
+  const criticalItems = items.filter(item =>
     item.reorderPoint !== null && item.onHand <= item.reorderPoint
   );
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Package className="size-8 text-indigo-500" />
-            Inventory Monitor
-          </h1>
-          <p className="text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Package className="size-5 text-sky-400" />
+            <h1 className="text-2xl font-semibold tracking-tight">Inventory Monitor</h1>
+          </div>
+          <p className="text-sm text-muted-foreground mt-0.5">
             SKU safety stock levels and reorder alerts.
           </p>
         </div>
@@ -34,54 +34,54 @@ export default async function InventoryPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total SKUs Tracked</CardTitle>
+        <Card className="rounded-xl border border-border/50 bg-card p-4">
+          <CardHeader className="p-0 pb-2">
+            <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Total SKUs Tracked</p>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{items.length}</div>
+          <CardContent className="p-0">
+            <div className="text-2xl font-semibold tracking-tight font-mono">{items.length}</div>
           </CardContent>
         </Card>
-        <Card className={criticalItems.length > 0 ? "border-red-500/50 bg-red-500/5" : ""}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <AlertOctagon className={`size-4 ${criticalItems.length > 0 ? "text-red-500" : "text-muted-foreground"}`} />
-              Critical Alerts
-            </CardTitle>
+        <Card className={`rounded-xl border bg-card p-4 ${criticalItems.length > 0 ? "border-red-500/30" : "border-border/50"}`}>
+          <CardHeader className="p-0 pb-2">
+            <div className="flex items-center gap-2">
+              <AlertOctagon className={`size-3.5 ${criticalItems.length > 0 ? "text-red-400" : "text-muted-foreground"}`} />
+              <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Critical Alerts</p>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${criticalItems.length > 0 ? "text-red-500" : ""}`}>
+          <CardContent className="p-0">
+            <div className={`text-2xl font-semibold tracking-tight font-mono ${criticalItems.length > 0 ? "text-red-400" : ""}`}>
               {criticalItems.length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">Below reorder point</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Service Level</CardTitle>
+        <Card className="rounded-xl border border-border/50 bg-card p-4">
+          <CardHeader className="p-0 pb-2">
+            <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Service Level</p>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">95%</div>
-            <p className="text-xs text-muted-foreground mt-1">Z-Score: 1.65</p>
+          <CardContent className="p-0">
+            <div className="text-2xl font-semibold tracking-tight font-mono text-emerald-400">95%</div>
+            <p className="text-xs text-muted-foreground mt-1">Z-Score: <span className="font-mono">1.65</span></p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>SKU Inventory Status</CardTitle>
-          <CardDescription>Current on-hand quantities vs computed thresholds.</CardDescription>
+      <Card className="rounded-xl border border-border/50 bg-card">
+        <CardHeader className="px-4 pt-4 pb-2">
+          <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">SKU Inventory Status</p>
+          <CardDescription className="text-xs">Current on-hand quantities vs computed thresholds.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 pb-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>SKU</TableHead>
-                <TableHead>Item Name</TableHead>
-                <TableHead className="text-right">On Hand</TableHead>
-                <TableHead className="text-right">Safety Stock</TableHead>
-                <TableHead className="text-right">Reorder Pt</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">SKU</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Item Name</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground text-right">On Hand</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground text-right">Safety Stock</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground text-right">Reorder Pt</TableHead>
+                <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -95,7 +95,7 @@ export default async function InventoryPage() {
                 items.map((item) => {
                   const isCritical = item.reorderPoint !== null && item.onHand <= item.reorderPoint;
                   return (
-                    <TableRow key={item.sku} className={isCritical ? "bg-red-500/5" : ""}>
+                    <TableRow key={item.sku} className="hover:bg-white/[0.03] transition-colors">
                       <TableCell className="font-mono font-medium">{item.sku}</TableCell>
                       <TableCell>{item.name}</TableCell>
                       <TableCell className="text-right font-mono">
@@ -109,9 +109,15 @@ export default async function InventoryPage() {
                       </TableCell>
                       <TableCell>
                         {isCritical ? (
-                          <Badge variant="destructive">Reorder</Badge>
+                          <div className="flex items-center gap-2">
+                            <div className="size-1.5 rounded-full bg-red-400" />
+                            <span className="text-sm text-red-400">Reorder</span>
+                          </div>
                         ) : (
-                          <Badge variant="outline" className="text-green-500 border-green-500/30 bg-green-500/10">Healthy</Badge>
+                          <div className="flex items-center gap-2">
+                            <div className="size-1.5 rounded-full bg-emerald-400" />
+                            <span className="text-sm text-emerald-400">Healthy</span>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>

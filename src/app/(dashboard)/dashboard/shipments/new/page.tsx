@@ -41,23 +41,23 @@ export default function NewShipmentPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl flex flex-col gap-6 w-full">
+    <div className="mx-auto max-w-2xl flex flex-col gap-6 w-full animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold">New Shipment</h1>
-        <p className="text-muted-foreground text-sm">Create a new shipment manually.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">New Shipment</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Create a new shipment manually.</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 border p-6 rounded-lg bg-card">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 rounded-xl border border-border/50 bg-card p-6">
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Shipment ID</FormLabel>
+                  <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Shipment ID</FormLabel>
                   <FormControl>
-                    <Input placeholder="SH-1234" {...field} />
+                    <Input placeholder="SH-1234" className="font-mono" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -68,7 +68,7 @@ export default function NewShipmentPage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reference Name</FormLabel>
+                  <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Reference Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Electronics Batch A" {...field} />
                   </FormControl>
@@ -83,7 +83,7 @@ export default function NewShipmentPage() {
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Status</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
@@ -109,9 +109,9 @@ export default function NewShipmentPage() {
               name="originPortId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Origin Port (UN/LOCODE)</FormLabel>
+                  <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Origin Port (UN/LOCODE)</FormLabel>
                   <FormControl>
-                    <Input placeholder="SGSIN" {...field} />
+                    <Input placeholder="SGSIN" className="font-mono" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,9 +122,9 @@ export default function NewShipmentPage() {
               name="destinationPortId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Destination Port (UN/LOCODE)</FormLabel>
+                  <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Destination Port (UN/LOCODE)</FormLabel>
                   <FormControl>
-                    <Input placeholder="NLRTM" {...field} />
+                    <Input placeholder="NLRTM" className="font-mono" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,9 +138,9 @@ export default function NewShipmentPage() {
               name="carrierId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Carrier ID</FormLabel>
+                  <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Carrier ID</FormLabel>
                   <FormControl>
-                    <Input placeholder="MSK" {...field} />
+                    <Input placeholder="MSK" className="font-mono" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,9 +151,9 @@ export default function NewShipmentPage() {
               name="vesselMmsi"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vessel MMSI (Optional)</FormLabel>
+                  <FormLabel className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Vessel MMSI (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="211234567" {...field} />
+                    <Input placeholder="211234567" className="font-mono" {...field} />
                   </FormControl>
                   <FormDescription>For real-time AIS tracking.</FormDescription>
                   <FormMessage />

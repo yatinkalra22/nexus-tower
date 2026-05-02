@@ -40,31 +40,64 @@ export function ApprovalCard({ action, payload, onExecuted }: ApprovalCardProps)
 
   if (executed) {
     return (
-      <div className="p-4 border rounded-lg bg-green-500/10 border-green-500/20 text-green-500 text-sm flex items-center gap-2">
-        <Check className="size-4" />
-        Action Executed
+      <div className="border-l-2 border-emerald-400/60 pl-4 py-2">
+        <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono">
+          <span className="size-1.5 rounded-full bg-emerald-400 shrink-0" />
+          Action executed
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3 p-4 border rounded-lg bg-card shadow-sm border-orange-500/30">
-      <div className="text-sm font-semibold text-orange-500 uppercase tracking-wider flex items-center gap-2">
-        <Loader2 className="size-3 animate-spin" />
-        Awaiting Human Approval
-      </div>
-      <p className="text-sm text-foreground">
-        Agent proposes <strong>{action}</strong> for shipment {payload.shipmentId}.
-      </p>
-      <div className="flex gap-2">
-        <Button size="sm" onClick={handleExecute} disabled={loading} className="bg-green-600 hover:bg-green-700">
-          {loading ? <Loader2 className="size-3 animate-spin mr-2" /> : <Check className="size-3 mr-2" />}
-          Approve & Execute
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => toast.info("Action rejected")} disabled={loading}>
-          <X className="size-3 mr-2" />
-          Reject
-        </Button>
+    <div className="border-l-2 border-amber-400 pl-4 py-3">
+      <div className="flex flex-col gap-3">
+        {/* Header */}
+        <div className="flex items-center gap-2">
+          <span className="size-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+          <span className="text-[11px] uppercase tracking-widest text-amber-400/80 font-mono">
+            Awaiting approval
+          </span>
+        </div>
+
+        {/* Description */}
+        <p className="text-sm text-foreground/80 leading-relaxed">
+          Agent proposes{" "}
+          <span className="font-mono text-foreground">{action}</span>
+          {payload.shipmentId && (
+            <>
+              {" "}for shipment{" "}
+              <span className="font-mono text-foreground">{String(payload.shipmentId)}</span>
+            </>
+          )}
+        </p>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={handleExecute}
+            disabled={loading}
+            className="h-7 px-3 text-xs font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/25 transition-colors duration-150"
+          >
+            {loading ? (
+              <Loader2 className="size-3 animate-spin mr-1.5" />
+            ) : (
+              <Check className="size-3 mr-1.5" />
+            )}
+            Approve
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => toast.info("Action rejected")}
+            disabled={loading}
+            className="h-7 px-3 text-xs font-mono border-border/50 text-muted-foreground hover:bg-white/[0.03] transition-colors duration-150"
+          >
+            <X className="size-3 mr-1.5" />
+            Reject
+          </Button>
+        </div>
       </div>
     </div>
   );

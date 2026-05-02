@@ -13,15 +13,18 @@ export default async function GlobalMapPage() {
   const mmsis = activeShipments.map(s => s.vesselMmsi as string);
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-4 h-full animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Global Fleet Map</h1>
-        <div className="text-sm text-muted-foreground">
-          Tracking {mmsis.length} active vessels
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Global Fleet Map</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Real-time vessel positions via AIS</p>
+        </div>
+        <div className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">
+          Tracking <span className="font-mono text-foreground">{mmsis.length}</span> active vessels
         </div>
       </div>
-      
-      <div className="flex-1 min-h-[600px] border rounded-xl overflow-hidden shadow-lg">
+
+      <div className="flex-1 min-h-[600px] rounded-xl border border-border/50 overflow-hidden">
         <LiveMap mmsis={mmsis} height="100%" />
       </div>
     </div>

@@ -79,8 +79,8 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#3b82f6",
-            "line-width": 4,
+            "line-color": "#38BDF8",
+            "line-width": 3,
             "line-dasharray": [2, 1],
           },
         });
@@ -107,20 +107,29 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
 
     eventSource.onmessage = (event) => {
       const positions: Position[] = JSON.parse(event.data);
-      
+
       positions.forEach((pos) => {
         if (markers.current.has(pos.mmsi)) {
           markers.current.get(pos.mmsi)?.setLngLat([pos.longitude, pos.latitude]);
         } else {
           const el = document.createElement("div");
           el.className = "vessel-marker";
-          el.innerHTML = `<div style="background-color: #3b82f6; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`;
-          
+          el.style.cssText = "position: relative; width: 14px; height: 14px;";
+          el.innerHTML = `
+            <div style="
+              position: absolute; inset: 0;
+              background: #38BDF8;
+              border-radius: 50%;
+              border: 2px solid rgba(56, 189, 248, 0.3);
+              box-shadow: 0 0 12px rgba(56, 189, 248, 0.4), 0 0 4px rgba(56, 189, 248, 0.6);
+            "></div>
+          `;
+
           const marker = new maplibregl.Marker(el)
             .setLngLat([pos.longitude, pos.latitude])
             .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`<h3>MMSI: ${pos.mmsi}</h3><p>Speed: ${pos.speed} kn</p>`))
             .addTo(map.current!);
-          
+
           markers.current.set(pos.mmsi, marker);
         }
       });
@@ -130,10 +139,22 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
   }, [mmsis]);
 
   return (
-    <div className="relative w-full rounded-xl overflow-hidden border bg-muted" style={{ height }}>
+    <div
+      className="relative w-full overflow-hidden rounded-xl border border-border/50 bg-card"
+      style={{ height }}
+    >
       <div ref={mapContainer} className="absolute inset-0" />
-      <div className="absolute top-4 left-4 z-10 bg-background/80 backdrop-blur-md p-2 rounded-md border text-[10px] font-medium uppercase tracking-wider">
-        Live AIS Feed: Tracking {mmsis.length} Vessels
+      {/* Live indicator */}
+      <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-md border border-border/50 bg-background/80 px-2 py-1 backdrop-blur-sm">
+        <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse-status" />
+        <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          LIVE
+        </span>
+        {mmsis.length > 0 && (
+          <span className="font-mono text-[10px] text-muted-foreground/60">
+            {mmsis.length} vessel{mmsis.length !== 1 ? "s" : ""}
+          </span>
+        )}
       </div>
     </div>
   );

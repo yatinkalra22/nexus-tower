@@ -30,46 +30,43 @@ export default function AgentPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)] gap-4">
-      <div className="flex items-center gap-2">
-        <Terminal className="size-6 text-primary" />
-        <h1 className="text-3xl font-bold">Disruptor Fixer</h1>
+    <div className="flex flex-col h-[calc(100vh-10rem)] gap-4 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-baseline gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Agent</h1>
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+          AI-powered disruption response
+        </span>
       </div>
 
-      <div className="flex-1 border rounded-xl bg-card overflow-hidden flex flex-col">
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-          <div className="flex flex-col gap-4">
+      {/* Chat container */}
+      <div className="flex-1 border border-border/50 rounded-xl bg-card overflow-hidden flex flex-col">
+        <ScrollArea className="flex-1 p-5" ref={scrollRef}>
+          <div className="flex flex-col gap-5">
+            {/* Empty state */}
             {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-20 text-center gap-2">
-                <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot className="size-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg">NexusTower Agent Ready</h3>
-                <p className="text-muted-foreground text-sm max-w-xs">
-                  Ask me about shipments at risk, weather disruptions, or propose reroutes using
-                  real-time data.
+              <div className="flex flex-col items-center justify-center py-24 text-center gap-1.5">
+                <p className="text-sm text-muted-foreground/60">
+                  Ask about shipments at risk, weather disruptions, or propose reroutes.
                 </p>
               </div>
             )}
+
+            {/* Messages */}
             {messages.map((msg) => {
               const textParts = msg.parts.filter(p => p.type === 'text');
               const toolParts = msg.parts.filter(p => p.type.startsWith('tool-'));
               const textContent = textParts.map(p => p.type === 'text' ? p.text : '').join('');
 
               return (
-                <div key={msg.id} className="flex flex-col gap-2">
+                <div key={msg.id} className="flex flex-col gap-2.5">
                   {textContent && (
-                    <div className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div
-                        className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
-                          msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted border'
-                        }`}
-                      >
-                        {msg.role === 'user' ? 'U' : 'A'}
-                      </div>
-                      <div
-                        className={`p-3 rounded-lg text-sm max-w-[80%] whitespace-pre-wrap ${
-                          msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted/50'
+                        className={`text-sm max-w-[75%] whitespace-pre-wrap leading-relaxed ${
+                          msg.role === 'user'
+                            ? 'px-4 py-2.5 rounded-2xl rounded-br-md bg-primary/10 border border-primary/20 text-foreground'
+                            : 'text-foreground/90'
                         }`}
                       >
                         {textContent}
@@ -94,7 +91,7 @@ export default function AgentPage() {
                     else if (state === 'input-available' || state === 'input-streaming') cardStatus = 'running';
 
                     return (
-                      <div key={`${msg.id}-tool-${i}`} className="ml-11">
+                      <div key={`${msg.id}-tool-${i}`}>
                         <ToolCallCard
                           toolName={toolName}
                           args={inputArgs}
@@ -115,31 +112,46 @@ export default function AgentPage() {
                 </div>
               );
             })}
+
+            {/* Thinking indicator */}
             {isLoading && (
-              <div className="flex items-center gap-2 text-muted-foreground text-sm ml-11">
-                <Loader2 className="size-4 animate-spin" />
-                Agent is thinking...
+              <div className="flex items-center gap-1.5 text-muted-foreground/70 text-xs font-mono">
+                <span>thinking</span>
+                <span className="inline-flex gap-0.5">
+                  <span className="animate-bounce [animation-delay:0ms]">.</span>
+                  <span className="animate-bounce [animation-delay:150ms]">.</span>
+                  <span className="animate-bounce [animation-delay:300ms]">.</span>
+                </span>
               </div>
             )}
           </div>
         </ScrollArea>
 
+        {/* Error banner */}
         {error && (
-          <div className="mx-4 mb-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+          <div className="mx-4 mb-2 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/15 text-red-400 text-xs font-mono">
             {error.message}
           </div>
         )}
 
-        <div className="border-t p-4">
-          <form onSubmit={handleSubmit} className="flex gap-2">
+        {/* Input bar */}
+        <div className="p-3">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-xl bg-card border border-border/50 px-3 py-1.5 transition-colors duration-200 focus-within:border-primary/30">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about shipments, risks, or propose actions..."
               disabled={isLoading}
+              className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm placeholder:text-muted-foreground/40"
             />
-            <Button type="submit" disabled={isLoading || !input.trim()}>
-              <Send className="size-4" />
+            <Button
+              type="submit"
+              size="icon"
+              variant="ghost"
+              disabled={isLoading || !input.trim()}
+              className="size-8 shrink-0 text-muted-foreground hover:text-primary hover:bg-white/[0.03] transition-colors duration-150"
+            >
+              <Send className="size-3.5" />
             </Button>
           </form>
         </div>
