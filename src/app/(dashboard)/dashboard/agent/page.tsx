@@ -30,7 +30,7 @@ export default function AgentPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)] gap-4 animate-fade-in">
+    <div className="flex flex-col h-[calc(100dvh-8rem)] gap-4 animate-fade-in">
       {/* Header */}
       <div className="flex items-baseline gap-3">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Agent</h1>
@@ -45,10 +45,17 @@ export default function AgentPage() {
           <div className="flex flex-col gap-5">
             {/* Empty state */}
             {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-24 text-center gap-1.5">
+              <div className="flex flex-col items-center justify-center py-24 text-center gap-3">
                 <p className="text-sm text-muted-foreground/60">
                   Ask about shipments at risk, weather disruptions, or propose reroutes.
                 </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {["What shipments are at risk?", "Check weather on active routes", "Scan for geopolitical disruptions", "Show my fleet status"].map(q => (
+                    <button key={q} onClick={() => { setInput(q); }} className="rounded-lg border border-border/50 bg-white/[0.03] px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
+                      {q}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 

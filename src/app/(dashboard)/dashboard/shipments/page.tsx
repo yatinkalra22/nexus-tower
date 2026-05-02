@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Ship } from 'lucide-react';
 import Link from 'next/link';
 
 import { ImportCSVButton } from './import-button';
@@ -29,12 +29,12 @@ export default async function ShipmentsPage() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Shipments</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage and track all shipments</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <ImportCSVButton />
           <Link href="/dashboard/shipments/new">
             <Button size="sm">
@@ -46,7 +46,8 @@ export default async function ShipmentsPage() {
       </div>
 
       <div className="rounded-xl border border-border/50 bg-card">
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>
               <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">ID</TableHead>
@@ -60,8 +61,23 @@ export default async function ShipmentsPage() {
           <TableBody>
             {shipments.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                  No shipments found.
+                <TableCell colSpan={6} className="h-48">
+                  <div className="flex flex-col items-center justify-center gap-3 py-8">
+                    <Ship className="size-8 text-muted-foreground/20" />
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-muted-foreground">No shipments yet</p>
+                      <p className="text-xs text-muted-foreground/60 mt-1">Import a CSV file or create your first shipment to start tracking.</p>
+                    </div>
+                    <div className="flex gap-2 mt-2">
+                      <ImportCSVButton />
+                      <Link href="/dashboard/shipments/new">
+                        <Button size="sm" variant="outline" className="border-border/50">
+                          <Plus className="mr-2 size-4" />
+                          New Shipment
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
@@ -87,6 +103,7 @@ export default async function ShipmentsPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,6 @@ import {
   Package,
   Terminal,
   FileText,
-  Key,
   Radar,
 } from 'lucide-react';
 
@@ -47,13 +46,7 @@ const navSections = [
       { title: 'Sustainability', url: '/dashboard/sustainability', icon: Leaf },
       { title: 'Tariffs', url: '/dashboard/tariffs', icon: Globe },
       { title: 'Agent', url: '/dashboard/agent', icon: Terminal },
-    ],
-  },
-  {
-    label: 'System',
-    items: [
       { title: 'Audit Log', url: '/dashboard/audit', icon: FileText },
-      { title: 'MCP Access', url: '/dashboard/settings/mcp', icon: Key },
     ],
   },
 ];

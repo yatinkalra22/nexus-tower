@@ -15,17 +15,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Separator orientation="vertical" className="mr-2 h-4 bg-border/50" />
             <div className="flex items-center gap-1.5">
               <div className="size-1.5 rounded-full bg-emerald-400 animate-pulse-status" />
-              <span className="text-[11px] font-medium tracking-wide uppercase text-muted-foreground">
+              <span className="hidden sm:inline text-[11px] font-medium tracking-wide uppercase text-muted-foreground">
                 Operational
               </span>
             </div>
           </div>
           <div className="flex items-center gap-5">
-            <TokenMeter />
+            <div className="hidden md:block">
+              <TokenMeter />
+            </div>
             <UserButton />
           </div>
         </header>
-        <main className="flex flex-1 flex-col gap-6 p-4 md:p-6 animate-fade-in">{children}</main>
+        <main className="flex flex-1 flex-col gap-6 p-3 md:p-6 animate-fade-in">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

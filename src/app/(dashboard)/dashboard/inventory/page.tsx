@@ -33,7 +33,7 @@ export default async function InventoryPage() {
         <ImportInventoryCSVButton />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card className="rounded-xl border border-border/50 bg-card p-4">
           <CardHeader className="p-0 pb-2">
             <p className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Total SKUs Tracked</p>
@@ -73,7 +73,8 @@ export default async function InventoryPage() {
           <CardDescription className="text-xs">Current on-hand quantities vs computed thresholds.</CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0">
-          <Table>
+          <div className="overflow-x-auto">
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">SKU</TableHead>
@@ -87,8 +88,17 @@ export default async function InventoryPage() {
             <TableBody>
               {items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                    No inventory data. Import a CSV to get started.
+                  <TableCell colSpan={6} className="h-48">
+                    <div className="flex flex-col items-center justify-center gap-3 py-8">
+                      <Package className="size-8 text-muted-foreground/20" />
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-muted-foreground">No SKUs tracked</p>
+                        <p className="text-xs text-muted-foreground/60 mt-1">Import inventory data via CSV to monitor safety stock levels and reorder alerts.</p>
+                      </div>
+                      <div className="mt-2">
+                        <ImportInventoryCSVButton />
+                      </div>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -126,6 +136,7 @@ export default async function InventoryPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

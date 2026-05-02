@@ -15,7 +15,7 @@ export default async function AuditPage() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-5 text-emerald-400" />
@@ -23,13 +23,14 @@ export default async function AuditPage() {
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">Immutable records of all agent and human actions</p>
         </div>
-        <Badge variant="outline" className="text-sky-400 bg-sky-400/10 border-transparent h-6">
+        <Badge variant="outline" className="text-sky-400 bg-sky-400/10 border-transparent h-6 w-fit">
           Immutable Records
         </Badge>
       </div>
 
       <div className="rounded-xl border border-border/50 bg-card">
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>
               <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Timestamp</TableHead>
@@ -80,6 +81,7 @@ export default async function AuditPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );

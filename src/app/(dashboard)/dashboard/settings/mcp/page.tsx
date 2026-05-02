@@ -81,7 +81,8 @@ export default function McpSettingsPage() {
       </Card>
 
       <div className="rounded-xl border border-border/50 bg-card">
-        <Table>
+        <div className="overflow-x-auto">
+        <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>
               <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Name</TableHead>
@@ -113,6 +114,7 @@ export default function McpSettingsPage() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       <Card className="rounded-xl border border-dashed border-border/50 bg-card">

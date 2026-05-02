@@ -65,7 +65,7 @@ export default async function SustainabilityPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card className="rounded-xl border border-emerald-500/20 bg-card p-4">
           <CardHeader className="p-0 pb-2">
             <p className="text-[11px] font-medium tracking-widest uppercase text-emerald-400">
@@ -105,7 +105,8 @@ export default async function SustainabilityPage() {
           <CardDescription className="text-xs">Verified emissions per active shipment.</CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0">
-          <Table>
+          <div className="overflow-x-auto">
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">Shipment</TableHead>
@@ -144,6 +145,7 @@ export default async function SustainabilityPage() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 

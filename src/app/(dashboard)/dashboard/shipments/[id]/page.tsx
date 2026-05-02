@@ -38,10 +38,10 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight font-mono">{shipment.id}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight font-mono break-all">{shipment.id}</h1>
             <Badge variant="outline" className={`${sc.text} ${sc.bg} border-transparent capitalize`}>
               {shipment.status?.replace('_', ' ')}
             </Badge>

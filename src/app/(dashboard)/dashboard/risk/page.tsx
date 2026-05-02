@@ -93,8 +93,9 @@ export default async function RiskPage() {
             <span className="font-mono text-[11px] text-muted-foreground">{openExceptions.length} showing</span>
           </div>
           {openExceptions.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground/40 text-sm">
-              No open exceptions — fleet is nominal
+            <div className="text-center py-16 text-muted-foreground/40 text-sm leading-relaxed">
+              All clear — no exceptions detected.<br />
+              Disruptions from weather, AIS anomalies, and geopolitical events will appear here.
             </div>
           ) : (
             <div className="flex flex-col gap-1">
@@ -140,8 +141,9 @@ export default async function RiskPage() {
             <Link href="/dashboard/shipments" className="text-[11px] text-primary hover:underline">View All</Link>
           </div>
           {atRiskShipments.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground/40 text-sm">
-              No delayed shipments
+            <div className="text-center py-16 text-muted-foreground/40 text-sm leading-relaxed">
+              No delayed shipments.<br />
+              Delays are flagged automatically when AIS data shows speed anomalies.
             </div>
           ) : (
             <div className="flex flex-col gap-1">

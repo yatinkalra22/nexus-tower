@@ -37,7 +37,8 @@ export default async function TariffsPage() {
           <BookOpen className="size-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="px-0 pb-0">
-          <Table>
+          <div className="overflow-x-auto">
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">HS Code</TableHead>
@@ -73,6 +74,7 @@ export default async function TariffsPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
