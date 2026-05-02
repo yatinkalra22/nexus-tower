@@ -20,6 +20,7 @@ export function ApprovalCard({ action, payload, onExecuted }: ApprovalCardProps)
     try {
       const res = await fetch("/api/agent/execute", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, payload }),
       });
       const result = await res.json();

@@ -37,10 +37,6 @@ export async function deleteShipment(id: string) {
 
 export async function getShipments() {
   return db.query.shipments.findMany({
-    with: {
-      // These relations will be defined in a refined schema if needed, 
-      // but simple joins work with Drizzle too.
-    },
     orderBy: (shipments, { desc }) => [desc(shipments.createdAt)],
   });
 }

@@ -8,7 +8,16 @@ export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) return new Response("Unauthorized", { status: 401 });
 
-  const { action, payload } = await req.json();
+  const body = await req.json();
+  const { action, payload } = body;
+
+  if (!action || !["reroute", "rebook", "notify"].includes(action)) {
+    return NextResponse.json({ ok: false, error: "Invalid action" }, { status: 400 });
+  }
+
+  if (!payload?.shipmentId) {
+    return NextResponse.json({ ok: false, error: "Missing shipmentId in payload" }, { status: 400 });
+  }
 
   try {
     return await db.transaction(async (tx) => {

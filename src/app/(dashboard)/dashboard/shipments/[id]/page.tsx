@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Trash2, Edit, MapPin, Ship, Calendar } from 'lucide-react';
+import { Trash2, MapPin, Ship, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 
@@ -40,12 +40,6 @@ export default async function ShipmentDetailPage({ params }: { params: Promise<{
           <p className="text-muted-foreground">{shipment.name}</p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/dashboard/shipments/${shipment.id}/edit`}>
-            <Button variant="outline" size="sm">
-              <Edit className="mr-2 size-4" />
-              Edit
-            </Button>
-          </Link>
           <form action={handleDelete}>
             <Button variant="destructive" size="sm" type="submit">
               <Trash2 className="mr-2 size-4" />

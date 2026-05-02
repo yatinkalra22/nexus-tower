@@ -1,84 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useChat } from '@ai-sdk/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, Terminal, Bot } from 'lucide-react';
-
-type Message = {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-};
+import { Send, Terminal, Bot, Loader2 } from 'lucide-react';
+import { ToolCallCard } from '@/components/agent/tool-call-card';
+import { ApprovalCard } from '@/components/agent/approval-card';
+import { useEffect, useRef, useState } from 'react';
 
 export default function AgentPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, sendMessage, status, error } = useChat();
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const isLoading = status === 'submitted' || status === 'streaming';
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    sendMessage({ text: input });
     setInput('');
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-        }),
-      });
-
-      if (!response.ok) throw new Error('Chat request failed');
-
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
-
-      let assistantContent = '';
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        assistantContent += decoder.decode(value);
-      }
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: assistantContent,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Chat error:', error);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)] gap-4">
-      {/* Header */}
       <div className="flex items-center gap-2">
         <Terminal className="size-6 text-primary" />
         <h1 className="text-3xl font-bold">Disruptor Fixer</h1>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 border rounded-xl bg-card overflow-hidden flex flex-col">
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
           <div className="flex flex-col gap-4">
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 text-center gap-2">
@@ -92,31 +51,85 @@ export default function AgentPage() {
                 </p>
               </div>
             )}
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-              >
-                <div
-                  className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
-                    msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted border'
-                  }`}
-                >
-                  {msg.role === 'user' ? 'U' : 'A'}
+            {messages.map((msg) => {
+              const textParts = msg.parts.filter(p => p.type === 'text');
+              const toolParts = msg.parts.filter(p => p.type.startsWith('tool-'));
+              const textContent = textParts.map(p => p.type === 'text' ? p.text : '').join('');
+
+              return (
+                <div key={msg.id} className="flex flex-col gap-2">
+                  {textContent && (
+                    <div className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <div
+                        className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
+                          msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted border'
+                        }`}
+                      >
+                        {msg.role === 'user' ? 'U' : 'A'}
+                      </div>
+                      <div
+                        className={`p-3 rounded-lg text-sm max-w-[80%] whitespace-pre-wrap ${
+                          msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted/50'
+                        }`}
+                      >
+                        {textContent}
+                      </div>
+                    </div>
+                  )}
+
+                  {toolParts.map((part, i) => {
+                    const p = part as Record<string, unknown>;
+                    const toolName = typeof part.type === 'string' && part.type.startsWith('tool-')
+                      ? part.type.replace(/^tool-/, '')
+                      : 'unknown';
+                    const state = p.state as string | undefined;
+                    const output = p.output as Record<string, unknown> | undefined;
+                    const inputArgs = (p.input ?? {}) as Record<string, unknown>;
+                    const hasOutput = state === 'output-available' && output !== undefined;
+                    const isApproval = hasOutput && output?.status === 'pending_approval';
+
+                    let cardStatus: 'pending' | 'running' | 'done' | 'error' = 'pending';
+                    if (state === 'output-available') cardStatus = 'done';
+                    else if (state === 'output-error') cardStatus = 'error';
+                    else if (state === 'input-available' || state === 'input-streaming') cardStatus = 'running';
+
+                    return (
+                      <div key={`${msg.id}-tool-${i}`} className="ml-11">
+                        <ToolCallCard
+                          toolName={toolName}
+                          args={inputArgs}
+                          result={hasOutput ? output : undefined}
+                          status={cardStatus}
+                        />
+                        {isApproval && output && (
+                          <div className="mt-2">
+                            <ApprovalCard
+                              action={output.action as string}
+                              payload={output as Record<string, unknown>}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <div
-                  className={`p-3 rounded-lg text-sm max-w-[80%] ${
-                    msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted/50'
-                  }`}
-                >
-                  {msg.content}
-                </div>
+              );
+            })}
+            {isLoading && (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm ml-11">
+                <Loader2 className="size-4 animate-spin" />
+                Agent is thinking...
               </div>
-            ))}
+            )}
           </div>
         </ScrollArea>
 
-        {/* Input Area */}
+        {error && (
+          <div className="mx-4 mb-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+            {error.message}
+          </div>
+        )}
+
         <div className="border-t p-4">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input

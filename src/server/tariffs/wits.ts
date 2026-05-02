@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/db";
 import { tariffRatesCache } from "@/db/schema";
 import { eq, and } from "drizzle-orm";

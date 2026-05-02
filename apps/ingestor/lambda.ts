@@ -73,7 +73,7 @@ async function runSubscriptionWindow(windowMs = 45_000) {
 
         await client.execute({
           sql: 'INSERT INTO vessel_positions (mmsi, latitude, longitude, speed, heading, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
-          args: [mmsi, report.Latitude, report.Longitude, report.Sog, report.Cog, Date.now()],
+          args: [mmsi, report.Latitude, report.Longitude, report.Sog, report.Cog, Math.floor(Date.now() / 1000)],
         });
       } catch (error) {
         console.error('Lambda ingestor message handling error:', error);

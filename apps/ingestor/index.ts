@@ -62,13 +62,13 @@ function connect() {
         const longitude = report.Longitude;
         const speed = report.Sog;
         const heading = report.Cog;
-        const timestamp = new Date(); // Or parse from message if available
+        const timestampSec = Math.floor(Date.now() / 1000);
 
         console.log(`[${mmsi}] Lat: ${latitude}, Lon: ${longitude}, Speed: ${speed}`);
 
         await client.execute({
           sql: "INSERT INTO vessel_positions (mmsi, latitude, longitude, speed, heading, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
-          args: [mmsi, latitude, longitude, speed, heading, timestamp.getTime()],
+          args: [mmsi, latitude, longitude, speed, heading, timestampSec],
         });
       }
     } catch (err) {

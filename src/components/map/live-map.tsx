@@ -47,7 +47,7 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
     const m = map.current;
     const coords = waypoints.map(w => [w.longitude, w.latitude]);
 
-    m.on("load", () => {
+    const addRoute = () => {
       if (m.getSource("route")) {
         (m.getSource("route") as maplibregl.GeoJSONSource).setData({
           type: "Feature",
@@ -90,7 +90,13 @@ export function LiveMap({ mmsis = [], height = "600px", waypoints = [] }: LiveMa
       const bounds = new maplibregl.LngLatBounds();
       coords.forEach(c => bounds.extend(c as [number, number]));
       m.fitBounds(bounds, { padding: 50 });
-    });
+    };
+
+    if (m.loaded()) {
+      addRoute();
+    } else {
+      m.once("load", addRoute);
+    }
   }, [waypoints]);
 
   // Handle live positions via SSE

@@ -45,8 +45,6 @@ export async function enrichShipment(shipmentId: string) {
   await db.delete(routeWaypoints).where(eq(routeWaypoints.shipmentId, shipmentId));
 
   // 3. Fetch Weather & Events for key points (Origin, Mid, Dest)
-  const samplePoints = [waypoints[0], waypoints[Math.floor(waypoints.length / 2)], waypoints[waypoints.length - 1]];
-  
   for (const [i, point] of waypoints.entries()) {
     const isSample = i === 0 || i === Math.floor(waypoints.length / 2) || i === waypoints.length - 1;
     let weatherData = null;

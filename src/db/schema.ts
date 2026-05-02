@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { sqliteTable, text, integer, real, index, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, index, primaryKey, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const shipments = sqliteTable("shipments", {
   id: text("id").primaryKey(), // SH-XXXX
@@ -140,7 +140,7 @@ export const agentTokenUsage = sqliteTable("agent_token_usage", {
   inputTokens: integer("input_tokens").default(0),
   outputTokens: integer("output_tokens").default(0),
 }, (table) => ({
-  userDateIdx: index("agent_token_usage_user_date_idx").on(table.userId, table.date),
+  userDateUniq: uniqueIndex("agent_token_usage_user_date_uniq").on(table.userId, table.date),
 }));
 
 export const mcpTokens = sqliteTable("mcp_tokens", {
