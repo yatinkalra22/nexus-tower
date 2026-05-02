@@ -1,0 +1,3 @@
+id,name,status,originPortId,destinationPortId,carrierId,vesselMmsi,eta
+SH-0001,Electronics Batch A,in_transit,SGSIN,NLRTM,MSK,219018828,2026-06-15
+SH-0002,Auto Parts B,pending,DEHAM,USLAX,HPL,,2026-07-01

@@ -12,7 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Plus, Ship } from 'lucide-react';
 import Link from 'next/link';
 
-import { ImportCSVButton } from './import-button';
+import { CSVImportModal } from '@/components/shipments/csv-import-modal';
+import { GenerateDemoButton } from '@/components/dashboard/generate-demo-button';
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function ShipmentsPage() {
           <p className="text-sm text-muted-foreground mt-0.5">Manage and track all shipments</p>
         </div>
         <div className="flex items-center gap-2">
-          <ImportCSVButton />
+          <CSVImportModal />
           <Link href="/dashboard/shipments/new">
             <Button size="sm">
               <Plus className="mr-2 size-4" />
@@ -68,8 +69,9 @@ export default async function ShipmentsPage() {
                       <p className="text-sm font-medium text-muted-foreground">No shipments yet</p>
                       <p className="text-xs text-muted-foreground/60 mt-1">Import a CSV file or create your first shipment to start tracking.</p>
                     </div>
-                    <div className="flex gap-2 mt-2">
-                      <ImportCSVButton />
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <GenerateDemoButton />
+                      <CSVImportModal />
                       <Link href="/dashboard/shipments/new">
                         <Button size="sm" variant="outline" className="border-border/50">
                           <Plus className="mr-2 size-4" />
