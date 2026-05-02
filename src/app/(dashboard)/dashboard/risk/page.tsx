@@ -6,6 +6,20 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+const severityBorder: Record<string, string> = {
+  critical: "border-l-red-400",
+  high: "border-l-amber-400",
+  medium: "border-l-yellow-400",
+  low: "border-l-sky-400",
+};
+
+const severityDot: Record<string, string> = {
+  critical: "bg-red-400",
+  high: "bg-amber-400",
+  medium: "bg-yellow-400",
+  low: "bg-sky-400",
+};
+
 export default async function RiskPage() {
   const openExceptions = await db.query.exceptions.findMany({
     where: eq(exceptions.status, "open"),
@@ -25,20 +39,6 @@ export default async function RiskPage() {
       exceptions: true,
     },
   });
-
-  const severityBorder: Record<string, string> = {
-    critical: "border-l-red-400",
-    high: "border-l-amber-400",
-    medium: "border-l-yellow-400",
-    low: "border-l-sky-400",
-  };
-
-  const severityDot: Record<string, string> = {
-    critical: "bg-red-400",
-    high: "bg-amber-400",
-    medium: "bg-yellow-400",
-    low: "bg-sky-400",
-  };
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
@@ -159,11 +159,14 @@ export default async function RiskPage() {
                     </span>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] font-mono text-muted-foreground/50">{s.id}</span>
-                      {s.exceptions && s.exceptions.filter(e => e.status === "open").length > 0 && (
-                        <span className="text-[10px] font-mono text-red-400">
-                          {s.exceptions.filter(e => e.status === "open").length} exception{s.exceptions.filter(e => e.status === "open").length !== 1 ? "s" : ""}
-                        </span>
-                      )}
+                      {(() => {
+                        const openCount = s.exceptions?.filter(e => e.status === "open").length ?? 0;
+                        return openCount > 0 ? (
+                          <span className="text-[10px] font-mono text-red-400">
+                            {openCount} exception{openCount !== 1 ? "s" : ""}
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0 ml-2">

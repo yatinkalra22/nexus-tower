@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -139,13 +139,14 @@ export function CSVImportModal() {
     setMapping((prev) => ({ ...prev, [header]: value }));
   };
 
-  const mappedFields = Object.values(mapping).filter((v) => v !== "skip");
+  const mappedFields = useMemo(() => Object.values(mapping).filter((v) => v !== "skip"), [mapping]);
+  const visibleFields = useMemo(() => OUR_FIELDS.filter((f) => mappedFields.includes(f.key)), [mappedFields]);
   const hasId = mappedFields.includes("id");
   const hasName = mappedFields.includes("name");
   const canProceed = hasId && hasName;
 
   // Transform CSV data using the mapping
-  const transformedData = csvData.map((row) => {
+  const transformedData = useMemo(() => csvData.map((row) => {
     const out: Record<string, string> = {};
     for (const [header, field] of Object.entries(mapping)) {
       if (field !== "skip" && row[header]) {
@@ -153,7 +154,7 @@ export function CSVImportModal() {
       }
     }
     return out;
-  });
+  }), [csvData, mapping]);
 
   const handleImport = async () => {
     setImporting(true);
@@ -328,7 +329,7 @@ export function CSVImportModal() {
                 <thead className="sticky top-0 bg-card">
                   <tr className="bg-muted/30">
                     <th className="px-2 py-1.5 text-left font-medium text-muted-foreground">#</th>
-                    {OUR_FIELDS.filter((f) => mappedFields.includes(f.key)).map((f) => (
+                    {visibleFields.map((f) => (
                       <th key={f.key} className="px-2 py-1.5 text-left font-medium text-muted-foreground">
                         {f.label}
                       </th>
@@ -339,7 +340,7 @@ export function CSVImportModal() {
                   {transformedData.slice(0, 20).map((row, i) => (
                     <tr key={i} className="border-t border-border/20">
                       <td className="px-2 py-1.5 text-muted-foreground/40">{i + 1}</td>
-                      {OUR_FIELDS.filter((f) => mappedFields.includes(f.key)).map((f) => (
+                      {visibleFields.map((f) => (
                         <td key={f.key} className="px-2 py-1.5 font-mono">
                           {row[f.key] || <span className="text-muted-foreground/30">—</span>}
                         </td>

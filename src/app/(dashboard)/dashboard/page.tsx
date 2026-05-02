@@ -12,6 +12,13 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+const statusDot = (s: string | null) => {
+  if (s === "delayed") return "bg-red-400";
+  if (s === "arrived") return "bg-emerald-400";
+  if (s === "in_transit") return "bg-sky-400";
+  return "bg-amber-400";
+};
+
 export default async function DashboardPage() {
   const user = await requireUser();
 
@@ -74,13 +81,6 @@ export default async function DashboardPage() {
     dataUnavailable = true;
     console.error("Dashboard data load failed:", error);
   }
-
-  const statusDot = (s: string | null) => {
-    if (s === "delayed") return "bg-red-400";
-    if (s === "arrived") return "bg-emerald-400";
-    if (s === "in_transit") return "bg-sky-400";
-    return "bg-amber-400";
-  };
 
   return (
     <div className="flex flex-col gap-5 animate-fade-in">
