@@ -337,8 +337,8 @@ HITL tools return `{ status: "pending_approval" }` and never mutate the database
 ## Deployment
 
 1. Connect the repo to [Vercel](https://vercel.com)
-2. Set all environment variables in Vercel project settings
-3. Deploy -- Vercel handles build, cron (`/api/cron/enrich`), and runtime
+2. Set these env vars in the Vercel dashboard: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `BEDROCK_MODEL_ID`, `AISSTREAM_API_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
+3. Deploy — Vercel handles build, cron (`/api/cron/enrich`), and runtime
 4. Deploy the AIS ingestor as an AWS Lambda with EventBridge schedule, or run it as a persistent process
 
 ---
