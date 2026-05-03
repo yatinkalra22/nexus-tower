@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { shipments } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { shipments, routeWaypoints, exceptions } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
@@ -31,13 +31,16 @@ export async function updateShipment(id: string, data: Partial<z.infer<typeof sh
 }
 
 export async function deleteShipment(id: string) {
+  await db.delete(routeWaypoints).where(eq(routeWaypoints.shipmentId, id));
+  await db.delete(exceptions).where(eq(exceptions.shipmentId, id));
   await db.delete(shipments).where(eq(shipments.id, id));
   revalidatePath("/dashboard/shipments");
 }
 
 export async function deleteShipments(ids: string[]) {
   if (ids.length === 0) return;
-  const { inArray } = await import("drizzle-orm");
+  await db.delete(routeWaypoints).where(inArray(routeWaypoints.shipmentId, ids));
+  await db.delete(exceptions).where(inArray(exceptions.shipmentId, ids));
   await db.delete(shipments).where(inArray(shipments.id, ids));
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/shipments");
