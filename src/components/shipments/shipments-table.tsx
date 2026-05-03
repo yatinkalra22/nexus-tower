@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Loader2, Plus, Search } from "lucide-react";
 import { CSVImportModal } from "@/components/shipments/csv-import-modal";
+import { SeedDemoButton } from "@/components/shipments/seed-demo-button";
 import { deleteShipments } from "@/server/shipments";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -133,6 +134,7 @@ export function ShipmentsTable({ shipments }: { shipments: Shipment[] }) {
               <p className="text-sm text-muted-foreground mt-0.5">Manage and track all shipments</p>
             </div>
             <div className="flex items-center gap-2">
+              <SeedDemoButton />
               <CSVImportModal />
               <Link href="/dashboard/shipments/new">
                 <Button size="sm">
