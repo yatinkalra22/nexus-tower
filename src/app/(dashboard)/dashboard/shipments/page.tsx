@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { CSVImportModal } from '@/components/shipments/csv-import-modal';
 import { ShipmentsTable } from '@/components/shipments/shipments-table';
+import { SeedDemoButton } from '@/components/shipments/seed-demo-button';
 
 import type { Metadata } from "next";
 
@@ -48,6 +49,7 @@ export default async function ShipmentsPage() {
                     New Shipment
                   </Button>
                 </Link>
+                <SeedDemoButton />
               </div>
             </div>
           </div>

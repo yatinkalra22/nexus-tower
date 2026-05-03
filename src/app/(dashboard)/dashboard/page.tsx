@@ -8,7 +8,6 @@ import { count, eq, ne, desc } from "drizzle-orm";
 import { Ship, AlertTriangle, CheckCircle, Leaf, ArrowRight } from "lucide-react";
 import { computeGwp } from "@/lib/analytics/gwp";
 import { GetStartedBanner } from "@/components/dashboard/get-started";
-import { seedScenario } from "@/server/seed-scenario";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -24,12 +23,6 @@ const statusDot = (s: string | null) => {
 
 export default async function DashboardPage() {
   const user = await requireUser();
-
-  // Auto-seed scenario data for first-time users so the dashboard isn't empty
-  const [totalCheck] = await db.select({ value: count() }).from(shipments);
-  if ((totalCheck?.value ?? 0) === 0) {
-    await seedScenario();
-  }
 
   let activeCount = 0;
   let openExceptionsCount = 0;
