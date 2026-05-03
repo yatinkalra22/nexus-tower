@@ -40,6 +40,9 @@ export async function POST(req: Request) {
     - If you detect a risk (weather, speed reduction, news event), explain it clearly.
     - When suggesting a change (like a reroute), use the 'proposeReroute' tool which requires human approval.
     - Be concise, professional, and data-driven. No fluff.`,
+    onError: ({ error }) => {
+      console.error('[chat] streamText error:', error);
+    },
     onFinish: async ({ text, steps, usage }) => {
       try {
         const lastUserMsg = uiMessages[uiMessages.length - 1];
@@ -65,5 +68,20 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    onError: (error) => {
+      const e = error as { name?: string; message?: string; statusCode?: number };
+      const status = e?.statusCode;
+      const name = e?.name ?? 'Error';
+      const message = e?.message ?? String(error);
+      console.error('[chat] uiMessageStream error:', { name, status, message });
+      if (status === 403 || /AccessDenied|not authorized/i.test(message)) {
+        return `Bedrock denied this request (403). Likely causes: model access not granted in ${process.env.AWS_REGION}, IAM missing bedrock:InvokeModelWithResponseStream, or the model ID needs a cross-region inference profile prefix (e.g. "us.anthropic.claude-3-5-sonnet-..."). Check Vercel function logs for the full error.`;
+      }
+      if (status === 429 || /Throttl|TooManyRequests/i.test(message)) {
+        return 'Bedrock throttled this request. Wait a moment and retry.';
+      }
+      return `${name}: ${message}`;
+    },
+  });
 }
